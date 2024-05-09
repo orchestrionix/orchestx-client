@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
-    "jsx": "react-jsx",
-    "strict": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "target": "es6",  // Compile down to ECMAScript 6
+    "module": "esnext",  // Use the latest module standard
+    "jsx": "react-jsx",  // Use the new JSX transform
+    "strict": true,  // Enable all strict type-checking options
+    "moduleResolution": "node",  // Use Node.js module resolution mechanism
+    "esModuleInterop": true,  // Allows default imports from modules with no default export
+    "skipLibCheck": true,  // Skip type checking of all declaration files (*.d.ts)
+    "forceConsistentCasingInFileNames": true  // Disallow inconsistently-cased references to the same file
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*"  // Include all files in src for TypeScript compilation
+  ]
 }
-
