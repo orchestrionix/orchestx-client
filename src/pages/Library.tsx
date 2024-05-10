@@ -17,9 +17,10 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
   // Assuming you have a prop for the background image URL
 }) => {
   // Generate a hash value based on the playlistName
-  const hash = playlistName
+  const hash = playlistName ? playlistName
     .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0) : Math.random().toString(36).split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
   // Define gradient colors based on the hash
   const color1 = "#000000";

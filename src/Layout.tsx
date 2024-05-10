@@ -8,6 +8,7 @@ import {
 import { Outlet, Link } from 'react-router-dom';
 import { AdjustmentsVerticalOutline, Cog8ToothOutline, HomeModernOutline, ListBulletOutline, MagnifyingGlassOutline, UserOutline } from './components/icons';
 import { classNames } from './utils';
+import PlayerControle from './components/player';
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeModernOutline, current: true },
@@ -280,7 +281,7 @@ const Layout = () => {
           </div>
           {/* Player Control: Fixed height, ensured by grid layout */}
           <div className="bg-black h-40 xl:h-28 rounded-3xl mt-5 mb-3">
-            
+            <PlayerControle/>
           </div>
         </main>
 

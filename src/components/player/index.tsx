@@ -1,22 +1,16 @@
+
 import { Modal } from "./modal";
 import { useContext, useState } from "react";
-
 import { BackwardOutline, ForwardOutline, PauseOutline, PlayOutline, XMarkOutline } from "../icons";
-import { parseSongString, positionTimeLine, getPath, formatTime } from "../../utils";
+import { formatTime, getPath, parseSongString, positionTimeLine } from "../../utils";
+import { nextRemotePlayer, prevRemotePlayer, toggelRemotePlayer } from "../../actions";
 import { STATUS_PLAYING } from "../../utils/constants";
+import { PlayerContext } from "../../playerProvider";
+
 
 export default function PlayerControle() {
- // const context = useContext(PlayerContext);
-
-  const playerState = {
-    status: 'playing',
-    title: 'Demo song',
-    itemId: 1,
-    length: 23000,
-    position: 2300,
-    volume: 50,
-  }
-
+  const context = useContext(PlayerContext);
+  const playerState = context?.playerState;
   const [openSongModal, setOpenSongModal] = useState(false);
 
   const currentSong = parseSongString(playerState?.title ? playerState?.title : '');
@@ -38,18 +32,6 @@ export default function PlayerControle() {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-  }
-
-  function prevRemotePlayer(): void | PromiseLike<void> {
-    throw new Error("Function not implemented.");
-  }
-
-  function toggelRemotePlayer(): void | PromiseLike<void> {
-    throw new Error("Function not implemented.");
-  }
-
-  function nextRemotePlayer(): void | PromiseLike<void> {
-    throw new Error("Function not implemented.");
   }
 
   return (
@@ -99,22 +81,22 @@ export default function PlayerControle() {
             {/* Controles */}
             <div className="flex justify-around">
               <div className="flex space-x-6">
-                <button className="focus:outline-none hover:text-gold" onClick={async () =>
+                <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
                   await prevRemotePlayer()}>
                   <BackwardOutline className="h-10" />
                 </button>
                 {playerState?.status === STATUS_PLAYING ?
-                  <button className="focus:outline-non text-center hover:text-gold" onClick={async () =>
+                  <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
                     await toggelRemotePlayer()}>
                     <PauseOutline className="h-12" />
                   </button>
                   :
-                  <button className="focus:outline-non text-center hover:text-gold" onClick={async () =>
+                  <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
                     await toggelRemotePlayer()}>
                     <PlayOutline className="h-12" />
                   </button>
                 }
-                <button className="focus:outline-none  hover:text-gold" onClick={async () =>
+                <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
                   await nextRemotePlayer()}>
                   <ForwardOutline className="h-10" />
                 </button>
@@ -179,31 +161,31 @@ export default function PlayerControle() {
               </div>
 
               <div className="flex justify-between text-xs font-semibold px-4 py-2 xl:p-0">
-                <div className=" w-24 text-left">{formatTime(playerState?.position ? playerState?.position : 0)}</div>
+                <div className=" w-24 text-left text-gray-200">{formatTime(playerState?.position ? playerState?.position : 0)}</div>
 
                 <div className="flex space-x-4 p-2 py-4 xl:p-0 xl:mt-4">
-                  <button className="focus:outline-none hover:text-gold" onClick={async () =>
+                  <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
                     await prevRemotePlayer()}>
                     <BackwardOutline className="h-8" />
                   </button>
                   {playerState?.status === STATUS_PLAYING ? (
-                    <button className="focus:outline-non text-center hover:text-gold" onClick={async () =>
+                    <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
                       await toggelRemotePlayer()}>
                       <PauseOutline className="h-10" />
                     </button>
                   ) : (
-                    <button className="focus:outline-non text-center hover:text-gold" onClick={async () =>
+                    <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
                       await toggelRemotePlayer()}>
                       <PlayOutline className="h-10" />
                     </button>
                   )}
-                  <button className="focus:outline-none  hover:text-gold" onClick={async () =>
+                  <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
                     await nextRemotePlayer()}>
                     <ForwardOutline className="h-8" />
                   </button>
                 </div>
 
-                <div className=" w-24 text-right">{formatTime(playerState?.length ? playerState?.length : 0)}</div>
+                <div className=" w-24 text-right text-gray-200">{formatTime(playerState?.length ? playerState?.length : 0)}</div>
               </div>
             </div>
           </div>
@@ -213,5 +195,3 @@ export default function PlayerControle() {
     </>
   );
 }
-
-
