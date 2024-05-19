@@ -86,7 +86,7 @@ const Library: React.FC<Props> = ({ initialLists }) => {
     <div className="h-full flex flex-col">
       {/* First Section: Takes necessary height only */}
       <section className="pl-2 sm:pl-2">
-        <h2 className="text-md font-medium">Library</h2>
+        <h2 className="text-md font-medium text-white">Library</h2>
       </section>
 
       {/* Second Section: Takes up all remaining space and scrolls if needed */}

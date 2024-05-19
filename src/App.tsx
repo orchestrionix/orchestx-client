@@ -11,13 +11,12 @@ const App: React.FC = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index path="/" element={<HomePage />} />
-            <Route path="/about" element={<Library initialLists={[]} />} />
+            <Route index element={<HomePage />} />
+            <Route path="library" element={<Library initialLists={[]} />} />
           </Route>
         </Routes>
       </Router>
     </PlayerProvider>
   );
-}
-
+};
 export default App;  // Make sure to use default export here

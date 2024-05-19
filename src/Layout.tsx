@@ -12,7 +12,7 @@ import PlayerControle from './components/player';
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeModernOutline, current: true },
-  { name: "Search", href: "/search", icon: MagnifyingGlassOutline, current: false },
+  { name: "Search", href: "/", icon: MagnifyingGlassOutline, current: false },
   { name: "Library", href: "/library", icon: ListBulletOutline, current: false },
 ];
 const teams = [
