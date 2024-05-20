@@ -27,8 +27,6 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
       // Replace with your data fetching logic
       const newPlayerState = await getRemotePlayerState();
 
-      console.log(newPlayerState);
-
       if (newPlayerState?.state) {
         updatePlayerState(newPlayerState?.state);
       }

@@ -1,23 +1,14 @@
 import { PlaylistType } from "./types";
 
 export async function getRemotePlayerState() {
-    //const state: any = await TCPRemotePlayerState();
+    const response = await fetch('http://localhost:4000/api/get-remote-player-state');
+    if (!response.ok) {
+        throw new Error('Network response was not ok.');
+    }
+    const data = await response.json();
+    return data
+};
 
-    // if(state.includes("state")) {
-    //   return JSON.parse(state);
-    // }
-
-    return {
-        state: {
-            status: "playing" as any,
-            title: '65. Fox -FoxMedley3.mid (04:10)',
-            itemId: 5151,
-            length: 250000,
-            position: 200000,
-            volume: 50,
-        }
-    };
-}
 
 export async function getRemotePlayerPlaylist() {
     const playlist: PlaylistType = [
@@ -102,14 +93,29 @@ export async function getRemotePlayerPlaylist() {
 }
 
 export async function toggelRemotePlayer() {
-    return true;
+    const response = await fetch('http://localhost:4000/api/get-remote-player-state');
+    if (!response.ok) {
+        throw new Error('Network response was not ok.');
+    }
+    const data = await response.json();
+    return data
 }
 
 export async function nextRemotePlayer() {
-    return true;
+    const response = await fetch('http://localhost:4000/api/get-remote-player-state');
+    if (!response.ok) {
+        throw new Error('Network response was not ok.');
+    }
+    const data = await response.json();
+    return data
 }
 
 export async function prevRemotePlayer() {
-    return true;
+    const response = await fetch('http://localhost:4000/api/get-remote-player-state');
+    if (!response.ok) {
+        throw new Error('Network response was not ok.');
+    }
+    const data = await response.json();
+    return data
 }
 
