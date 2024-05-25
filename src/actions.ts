@@ -70,7 +70,7 @@ export async function checkRemoteFileExists(filePath: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to check file existence.");
+    toastError("Failed to check file existence.");
   }
   const data = await response.json();
   return data.exists; // Returns true/false
@@ -89,7 +89,7 @@ export async function createRemotePlaylist(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create playlist.");
+    toastError("Failed to create playlist.");
   }
 
   const data = await response.json();
@@ -109,7 +109,7 @@ export async function getRemoteSongsFromPlaylist(playlistName: string) {
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch songs from playlist.");
+    toastError("Failed to fetch songs from playlist.");
   }
 
   const data = await response.json();
@@ -129,7 +129,7 @@ export async function addRemoteSongToPlaylist(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to add song to playlist.");
+    toastError("Failed to add song to playlist.");
   }
 }
 
@@ -149,7 +149,7 @@ export async function deleteRemoteSongFromPlaylistByIndex(
   );
 
   if (!response.ok) {
-    throw new Error("Failed to delete song from playlist.");
+    toastError("Failed to delete song from playlist.");
   }
 }
 
