@@ -54,55 +54,52 @@ export function formatTime(milliseconds: number): string {
   }
 }
 
-export function parseSongString(s: string): {
+export function parseSongString(s?: string): {
   index: number;
   rhythm: string;
   name: string;
   extension: string;
   duration: number;
 } {
-  if (s.length === 0) {
-    return {
-      index: 0,
-      rhythm: '',
-      name: '',
-      extension: '',
-      duration: 0,
-    };
+  // Default values in case of mismatch or undefined input
+  const defaultResult = {
+    index: 0,
+    rhythm: "",
+    name: "",
+    extension: "",
+    duration: 0
+  };
+
+  // Check if input is undefined or empty
+  if (!s || s.trim() === "") {
+    return defaultResult;
   }
 
-  // Splitting the string at the first period and the dash
-  const [indexPart, rest] = s.split('. ', 2);
-  const [rhythmPart, nameExtDuration] = rest.split(' -', 2);
+  const match = s.match(/^(\d+)\. ([^-]+) -(.+)\.(.+)\s+\((\d+):(\d+)\)$/);
 
-  // Extracting the index
-  const index = parseInt(indexPart.trim());
+  // Return default if match fails
+  if (!match) {
+    return defaultResult;
+  }
 
-  // Trimming the rhythm
-  const rhythm = rhythmPart.trim();
+  const [, indexStr, rhythm, name, extension, minutesStr, secondsStr] = match;
 
-  // Extracting the name, extension, and duration
-  const parenthesisIndex = nameExtDuration.indexOf('(');
-  const nameExt = nameExtDuration.substring(0, parenthesisIndex).trim();
-  const durationPart = nameExtDuration.substring(parenthesisIndex);
-
-  // Further splitting name and extension
-  const [name, extension] = nameExt.split('.').map(part => part.trim());
-
-  // Splitting and converting the duration
-  const durationParts = durationPart.replace('(', '').replace(')', '').split(':');
-  const minutes = parseInt(durationParts[0]);
-  const seconds = parseInt(durationParts[1]);
-  const durationMs = (minutes * 60 + seconds) * 1000;
+  const index = parseInt(indexStr, 10);
+  const minutes = parseInt(minutesStr, 10);
+  const seconds = parseInt(secondsStr, 10);
+  const duration = (minutes * 60 + seconds) * 1000;
 
   return {
     index,
     rhythm,
     name,
     extension,
-    duration: durationMs,
+    duration
   };
 }
+
+
+
 
 export function extractJson(response: string): string {
   // Split the response by newlines

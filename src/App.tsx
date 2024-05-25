@@ -4,10 +4,13 @@ import HomePage from './pages/HomePage';
 import Library from './pages/Library';
 import Layout from './Layout';
 import { PlayerProvider } from './playerProvider';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const App: React.FC = () => {
   return (
     <PlayerProvider>
+      <ToastContainer />
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>

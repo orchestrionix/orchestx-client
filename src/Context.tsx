@@ -34,29 +34,29 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     setCounter(newPlayerState.position);
   };
 
-  useEffect(() => {
-    const fetchRemotePlayerState = async () => {
-      // Replace with your data fetching logic
-      const newPlayerState: any = {
-        state: {
-          status: "playing",
-          title: "Demo song",
-          itemId: 1,
-          length: 23000,
-          position: 2300,
-          volume: 50,
-        },
-      };
+  // useEffect(() => {
+  //   const fetchRemotePlayerState = async () => {
+  //     // Replace with your data fetching logic
+  //     const newPlayerState: any = {
+  //       state: {
+  //         status: "playing",
+  //         title: "Demo song",
+  //         itemId: 1,
+  //         length: 23000,
+  //         position: 2300,
+  //         volume: 50,
+  //       },
+  //     };
 
-      if (newPlayerState?.state) {
-        updatePlayerState(newPlayerState?.state);
-      }
-    };
+  //     if (newPlayerState?.state) {
+  //       updatePlayerState(newPlayerState?.state);
+  //     }
+  //   };
 
-    const intervalId = setInterval(fetchRemotePlayerState, 5000000000);
+  //   const intervalId = setInterval(fetchRemotePlayerState, 5000000000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   return (
     <PlayerContext.Provider value={{ playerState, updatePlayerState }}>
