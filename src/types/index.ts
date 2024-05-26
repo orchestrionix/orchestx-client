@@ -38,3 +38,5 @@ export interface IPlaylist {
     path: string;
     songs: IPlaylistSong[];
 } 
+
+export interface IActivePlaylistItem { index: number; rhythm: string; name: string; extension: string; }

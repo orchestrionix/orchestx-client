@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Library from './pages/Library';
+import Search from './pages/Search';
 import Layout from './Layout';
 import { PlayerProvider } from './playerProvider';
 import { ToastContainer } from "react-toastify";
@@ -15,7 +16,8 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="library" element={<Library initialLists={[]} />} />
+            <Route path="search" element={<Search />} />
+            <Route path="library" element={<Library />} />
           </Route>
         </Routes>
       </Router>

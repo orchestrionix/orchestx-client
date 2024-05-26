@@ -1,78 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { toastError, toastSuccess } from "../utils/toasts";
-import { DEFAULT_ERROR_MESSAGE } from "../utils/constants";
-import {
-  ChevronRightOutline,
-  DocumentOutline,
-  EllipsisHorizontalSolid,
-  FolderOutline,
-  HomeModernOutline,
-  PlusCircleOutline,
-  XMarkOutline,
-} from "../components/icons";
-import { MenuModal } from "../components/player/menuModal";
-import { IDirectoryItem, IPlaylist } from "../types";
-import { IColumn, Table } from "../components/tailwind/table";
+import { IActivePlaylistItem} from "../types";
+import { getRemotePlayerActivePlaylist } from "../actions";
 import BeatLoader from "react-spinners/BeatLoader";
-import {
-  addRemoteSongToPlaylist,
-  getRemoteAllPlaylists,
-  getRemoteFileDirectory,
-} from "../actions";
+import { IColumn, Table } from "../components/tailwind/table";
+import { parsePlaylistString } from "../utils";
 
 const HomePage: React.FC = () => {
-  const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
-  const [treeLoading, setTreeLoading] = useState(true);
-  const [nodeHistorie, setNodeHistorie] = useState<IDirectoryItem[]>([]);
-  const [selectedNode, setSelectedNode] = useState<IDirectoryItem | undefined>(
-    undefined
-  );
-  const [playlists, setPlaylists] = useState<IPlaylist[]>([]);
-
-  const [selectedFileForMenu, setSelectedFileForMenu] = useState<
-    IDirectoryItem | undefined
-  >();
-  const [openMenu, setOpenMenu] = useState(false);
+  const [listLoading, setListLoading] = useState(true);
+  const [playlist, setPlaylist] = useState<IActivePlaylistItem[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const lists = await getRemoteAllPlaylists();
-      if (lists) setPlaylists(lists);
+      const list = await getRemotePlayerActivePlaylist();
+      if (list) setPlaylist(parsePlaylistString(list));
 
-      const node = await getRemoteFileDirectory();
-      if (node) {
-        setNodeHistorie([node]);
-        setSelectedNode(node);
-      }
-
-      setTreeLoading(false);
+      setListLoading(false);
     }
 
-    fetchData(); // Call the async function inside useEffect
+    fetchData();
   }, []);
 
   const columns: IColumn[] = [
     {
       key: "column0",
-      name: "Title",
-      fieldName: "activity.title",
-      render: (item: IDirectoryItem) => {
+      name: "Rhythm",
+      fieldName: "activity.rhythm",
+      render: (item: IActivePlaylistItem) => {
         return (
-          <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center bg-gradient-to-b from-black to-grey-900">
-            {item?.type === "file" ? (
-              <DocumentOutline className="h-6 w-6" />
-            ) : (
-              <FolderOutline className="h-6 w-6" />
-            )}
-          </div>
+          <span className="text-ellipsis overflow-hidden block w-100">
+            {item?.rhythm}
+          </span>
         );
       },
     },
     {
       key: "column1",
-      name: "",
+      name: "Title",
       fieldName: "activity.title",
-      render: (item: IDirectoryItem) => {
+      render: (item: IActivePlaylistItem) => {
         return (
           <span className="text-ellipsis overflow-hidden block w-100">
             {item?.name}
@@ -84,90 +49,26 @@ const HomePage: React.FC = () => {
       key: "column2",
       name: "Type",
       fieldName: "activity.activityType.title",
-      render: (item: IDirectoryItem) => {
+      render: (item: IActivePlaylistItem) => {
         return (
           <span className="text-ellipsis overflow-hidden block w-16 ">
-            {item?.type === "directory" ? "Folder" : item?.extension}
+            {item?.extension}
           </span>
         );
       },
     },
-    {
-      key: "column3",
-      name: "",
-      fieldName: "activity.activityType.title",
-      render: (item: IDirectoryItem) => {
-        if (item.type === "file") {
-          return (
-            <span
-              className="text-ellipsis overflow-hidden block w-8 hover:cursor-pointer"
-              onClick={() => {
-                setSelectedFileForMenu(item);
-                setOpenMenu(true);
-              }}
-            >
-              <EllipsisHorizontalSolid className="h-6 w-6" />
-            </span>
-          );
-        }
-      },
-    },
   ];
-
+  
   return (
     <div className="h-full flex flex-col">
       {/* First Section: Takes necessary height only */}
-      <section className="">
-        <h2 className="text-md font-medium">Search</h2>
-        <div className="flex align-center mt-4 mb-4 h-10">
-          <nav className="flex" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-4">
-              {nodeHistorie &&
-                nodeHistorie.map((node, index) => (
-                  <>
-                    {index > 0 ? (
-                      <li key={node.name}>
-                        <div className="flex items-center">
-                          <ChevronRightOutline className="h-5 w-5 text-white" />
-
-                          <span
-                            onClick={() => {
-                              setSelectedNode(node);
-                              setNodeHistorie(nodeHistorie.slice(0, index + 1));
-                            }}
-                            className="ml-4 text-sm font-medium text-decapify-lightgray hover:text-decapify-semigray capitalize cursor-pointer"
-                          >
-                            {node.name}
-                          </span>
-                        </div>
-                      </li>
-                    ) : (
-                      <li key={node.name}>
-                        <div>
-                          <span
-                            className="text-decapify-lightgray hover:text-gray-500"
-                            onClick={() => {
-                              setSelectedNode(node);
-                              setNodeHistorie(nodeHistorie.slice(0, index + 1));
-                            }}
-                          >
-                            <HomeModernOutline className="h-5 w-5 text-white" />
-
-                            <span className="sr-only">Home</span>
-                          </span>
-                        </div>
-                      </li>
-                    )}
-                  </>
-                ))}
-            </ol>
-          </nav>
-        </div>
+      <section className="pl-2 sm:pl-2">
+        <h2 className="text-md font-medium text-white">Home</h2>
       </section>
 
       {/* Second Section: Takes up all remaining space and scrolls if needed */}
       <section className="flex-grow overflow-auto">
-        {treeLoading ? (
+        {listLoading ? (
           <div className="grid place-items-center h-4/5">
             <div className=" mx-auto inline">
               <BeatLoader color="#CCA483" size={25} />
@@ -177,72 +78,47 @@ const HomePage: React.FC = () => {
           <>
             <div className="hidden xl:block">
               <Table
-                items={selectedNode?.children ? selectedNode.children : []}
+                items={playlist}
                 columns={columns}
-                loading={treeLoading}
-                onSelect={(child: IDirectoryItem) => {
-                  if (child.type === "directory") {
-                    setSelectedNode(child);
-                    setNodeHistorie([...nodeHistorie, child]);
-                  }
+                loading={listLoading}
+                onSelect={(child: IActivePlaylistItem) => {
+                  console.log(child)
                 }}
                 selection={undefined}
               />
             </div>
             <div className="block xl:hidden">
-              {selectedNode?.children && selectedNode?.children.length > 0 ? (
+              {playlist && playlist.length > 0 ? (
                 <>
-                  {selectedNode?.children.map((item, i) => (
+                  {playlist.map((item, i) => (
                     <div
                       key={i.toString() + item.name} // random number as key, does not really matter, is for react rendering
                       className="flex items-center space-x-2 sm:space-x-4 p-1 sm:p-4 hover:bg-grey-900 text-white hover:text-gold cursor-pointer"
                       onClick={() => {
-                        if (item.type === "directory") {
-                          setSelectedNode(item);
-                          setNodeHistorie([...nodeHistorie, item]);
-                        }
+                        // if (item.type === "directory") {
+                        //   setSelectedNode(item);
+                        //   setNodeHistorie([...nodeHistorie, item]);
+                        // }
+                        console.log(item);
                       }}
                     >
-                      <div className="flex-shrink-0 h-14 w-14 items-center justify-center bg-gradient-to-b from-black to-grey-900 hidden sm:flex">
-                        {item?.type === "file" ? (
-                          <DocumentOutline className="h-6 w-6" />
-                        ) : (
-                          <FolderOutline className="h-6 w-6" />
-                        )}
-                      </div>
-
                       <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm text-grey-300 truncate">
+                          {item.rhythm}
+                        </p>
                         <p className="text-xs sm:text-sm font-normal truncate">
                           {item.name}
                         </p>
-                        <p className="text-xs sm:text-sm text-grey-300 truncate">
-                          {item.type === "file" ? item.extension : "Folder"}{" "}
-                        </p>
+                      
                       </div>
 
-                      {item.type === "file" ? (
-                        <div
-                          className="flex-shrink-0 h-14 w-14 flex items-center justify-center hover:cursor-pointer"
-                          onClick={() => {
-                            setSelectedFileForMenu(item);
-                            setOpenMenu(true);
-                          }}
-                        >
-                          <EllipsisHorizontalSolid className="h-6 w-6" />
-                        </div>
-                      ) : (
-                        <div className="flex-shrink-0 h-14 w-14 flex items-center justify-center ">
-                          {/* Keep icon as placholder to force fit it to its size, color transparant*/}
-                          <EllipsisHorizontalSolid className="h-6 w-6 text-transparent" />
-                        </div>
-                      )}
                     </div>
                   ))}
                 </>
               ) : (
                 <>
-                  {selectedNode?.children &&
-                  selectedNode?.children.length < 1 ? (
+                  {playlist &&
+                  playlist.length < 1 ? (
                     <div></div>
                   ) : (
                     <></>
@@ -253,74 +129,6 @@ const HomePage: React.FC = () => {
           </>
         )}
       </section>
-
-      <MenuModal open={openMenu} setOpen={setOpenMenu}>
-        <div className="h-full">
-          <section>
-            <div className="mb-10">
-              <div>
-                <XMarkOutline
-                  className="h-7 cursor-pointer hover:text-gold"
-                  onClick={() => setOpenMenu(false)}
-                />
-              </div>
-              <div className="p-4 flex justify-center h-full">
-                <div className="flex-shrink-0 h-40 w-40 items-center justify-center bg-gradient-to-b from-black to-gold flex">
-                  {selectedFileForMenu?.type === "file" ? (
-                    <DocumentOutline className="h-16 w-16" />
-                  ) : (
-                    <FolderOutline className="h-16 w-16" />
-                  )}
-                </div>
-              </div>
-              <h2 className="font-medium">{selectedFileForMenu?.name}</h2>
-            </div>
-            <div className="border-b-2 border-grey-900 mb-4">
-              <p className="text-left text-md font-medium pb-2">Playlists</p>
-            </div>
-          </section>
-
-          <div className="h-max overflow-y">
-            {selectedFileForMenu &&
-              playlists &&
-              playlists.map((list: IPlaylist, index: number) => (
-                <>
-                  <div
-                    key={list.index}
-                    className="flex bg-grey-900 hover:bg-grey-700 p-2 rounded my-1"
-                  >
-                    <div className="w-1/6 font-medium">{index + 1}</div>
-                    <div className="w-4/6 capitalize font-medium">
-                      {list.playlistName}
-                    </div>
-                    <div
-                      className="w-1/6 cursor-pointer text-white hover:text-gold border-none ring-0 focus:ring-0"
-                      onClick={async () => {
-                        try {
-                          await addRemoteSongToPlaylist(
-                            list.playlistName,
-                            selectedFileForMenu.path
-                          );
-                          setOpenMenu(false);
-                          toastSuccess("Successfully added to playlist");
-                        } catch (error: any) {
-                          setOpenMenu(false);
-                          toastError(
-                            error?.message
-                              ? error?.message
-                              : DEFAULT_ERROR_MESSAGE
-                          );
-                        }
-                      }}
-                    >
-                      <PlusCircleOutline className="h-6 w-6 ring-0 focus:ring-0" />
-                    </div>
-                  </div>
-                </>
-              ))}
-          </div>
-        </div>
-      </MenuModal>
     </div>
   );
 };

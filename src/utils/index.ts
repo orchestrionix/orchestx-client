@@ -1,4 +1,5 @@
 import { RefObject } from "react";
+import { IActivePlaylistItem } from "../types";
 
 export const isWebUrl = (url: string) => url && url.startsWith("https");
 
@@ -97,6 +98,37 @@ export function parseSongString(s?: string): {
     duration
   };
 }
+
+export function parsePlaylistString(songPaths: string[]): IActivePlaylistItem[] {
+  return songPaths.map((path, index) => {
+      // Extract filename from path
+      const filename = path.split('\\').pop(); // Get the last part (filename)
+
+      // Pattern matching for filename
+      const match = filename?.match(/([^-]*) -([^.]*)\.(.*)/);
+
+      // Return default object if match fails
+      if (!match) {
+          return {
+              index,
+              rhythm: "error",
+              name: "unable to parse",
+              extension: ""
+          };
+      }
+
+      // Extract parts if match succeeds
+      const [, rhythm, name, extension] = match;
+
+      return {
+          index,
+          rhythm: rhythm.trim(), 
+          name: name.trim(),
+          extension
+      };
+  });
+}
+
 
 
 

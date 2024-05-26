@@ -1,26 +1,17 @@
-import React from 'react';
+import React from "react";
 import { useEffect, useState } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
 import { FiDisc } from "react-icons/fi";
-import { IPlaylist, IPlaylistSong } from '../types';
+import { IPlaylist, IPlaylistSong } from "../types";
+import { getRemoteAllPlaylists } from "../actions";
 
-interface PlaylistItemProps {
-  index: number;
-  playlistName: string;
-  songs: IPlaylistSong[];
-}
-
-const PlaylistItem: React.FC<PlaylistItemProps> = ({
-  index,
-  playlistName,
-  songs,
-  // Assuming you have a prop for the background image URL
-}) => {
-  // Generate a hash value based on the playlistName
-  const hash = playlistName ? playlistName
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0) : Math.random().toString(36).split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+const PlaylistItem: React.FC<IPlaylist> = ({ index, playlistName, songs }) => {
+  const hash = playlistName
+    ? playlistName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    : Math.random()
+        .toString(36)
+        .split("")
+        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
   // Define gradient colors based on the hash
   const color1 = "#000000";
@@ -36,7 +27,11 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
       <div className="group relative p-4 rounded-xl bg-black sm:bg-grey-900">
         <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg relative">
           {/* Image Background */}
-          <img src={'../images/album_.jpg'} className="absolute inset-0 w-full h-full object-cover" alt="Playlist Background" />
+          <img
+            src={"../images/album_.jpg"}
+            className="absolute inset-0 w-full h-full object-cover"
+            alt="Playlist Background"
+          />
 
           {/* SVG Gradient Overlay */}
           <div
@@ -52,7 +47,9 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
 
           <div className="flex flex-col items-start justify-center text-small font-medium uppercase border-b-4 border-gold">
             <div className="flex-grow"></div>
-            <span className="border-l-4 border-gold mb-3 pl-2">{playlistName}</span>
+            <span className="border-l-4 border-gold mb-3 pl-2">
+              {playlistName}
+            </span>
           </div>
         </div>
         <div className="text-center">
@@ -64,23 +61,21 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
     </div>
   );
 };
-interface Props {
-  initialLists: IPlaylist[];
-}
 
-const Library: React.FC<Props> = ({ initialLists }) => {
-  const [listsLoading, setListsLoading] = useState(false);
-  const [lists, setLists] = useState<
-    {
-      index: number;
-      playlistName: string;
-      songs: IPlaylistSong[];
-    }[]
-  >(initialLists);
+const Library: React.FC = () => {
+  const [listsLoading, setListsLoading] = useState(true);
+  const [playlists, setPlaylists] = useState<IPlaylist[]>([]);
 
   useEffect(() => {
-    // Your useEffect logic for fetching playlists
-  }, []); // Remember to add dependencies if needed
+    async function fetchData() {
+      const lists = await getRemoteAllPlaylists();
+      if (lists) setPlaylists(lists);
+
+      setListsLoading(false);
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <div className="h-full flex flex-col">
@@ -101,12 +96,13 @@ const Library: React.FC<Props> = ({ initialLists }) => {
           <>
             <div className="w-full h-full">
               <div className="flex flex-wrap -p-2 h-full">
-                {lists.map((list, index) => (
+                {playlists.map((list, index) => (
                   <PlaylistItem
                     key={index}
                     index={list.index}
                     playlistName={list.playlistName}
                     songs={list.songs}
+                    path={list.path}
                   />
                 ))}
               </div>
@@ -118,4 +114,4 @@ const Library: React.FC<Props> = ({ initialLists }) => {
   );
 };
 
-export default Library
+export default Library;

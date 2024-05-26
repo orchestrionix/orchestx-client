@@ -12,15 +12,15 @@ export async function getRemotePlayerState() {
   return data;
 }
 
-export async function getRemotePlayerPlaylist() {
-  const response = await fetch("http://localhost:4000/get-all-playlists");
+export async function getRemotePlayerActivePlaylist() {
+  const response = await fetch("http://localhost:4000/api/get-remote-player-active-playlist");
 
   if (!response.ok) {
     throw new Error("Failed to fetch all playlists.");
   }
 
   const data = await response.json();
-  return data.playlists;
+  return data.playlist;
 }
 
 export async function toggelRemotePlayer() {
@@ -55,9 +55,9 @@ export async function prevRemotePlayer() {
   }
 }
 
-//==================================================================================
-//==================================================================================
-//==================================================================================
+//=========================================================================================
+//=========================================================================================
+//=========================================================================================
 
 export async function checkRemoteFileExists(filePath: string) {
   const response = await fetch("http://localhost:4000/api/file-exists", {
@@ -153,9 +153,9 @@ export async function deleteRemoteSongFromPlaylistByIndex(
   }
 }
 
-// =================================================================
-// =================================================================
-// =================================================================
+//=========================================================================================
+//=========================================================================================
+//=========================================================================================
 
 export async function getRemoteAllPlaylists(): Promise<IPlaylist[]> {
   const response = await fetch("http://localhost:4000/api/get-all-playlists");
