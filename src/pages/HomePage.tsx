@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IActivePlaylistItem} from "../types";
-import { getRemotePlayerActivePlaylist } from "../actions";
+import { getRemotePlayerActivePlaylist, playItemRemotePlayer, selectItemRemotePlayer } from "../actions";
 import BeatLoader from "react-spinners/BeatLoader";
 import { IColumn, Table } from "../components/tailwind/table";
-import { parsePlaylistString } from "../utils";
+import { classNames, parsePlaylistString } from "../utils";
+import { PlayerContext } from "../playerProvider";
 
 const HomePage: React.FC = () => {
+  const context = useContext(PlayerContext);
+  const playerState = context?.playerState;
   const [listLoading, setListLoading] = useState(true);
   const [playlist, setPlaylist] = useState<IActivePlaylistItem[]>([]);
 
@@ -18,7 +21,7 @@ const HomePage: React.FC = () => {
     }
 
     fetchData();
-  }, []);
+  }, [playerState?.itemId]);
 
   const columns: IColumn[] = [
     {
@@ -27,7 +30,7 @@ const HomePage: React.FC = () => {
       fieldName: "activity.rhythm",
       render: (item: IActivePlaylistItem) => {
         return (
-          <span className="text-ellipsis overflow-hidden block w-100">
+          <span className={classNames('text-ellipsis overflow-hidden block w-100')}>
             {item?.rhythm}
           </span>
         );
@@ -39,7 +42,7 @@ const HomePage: React.FC = () => {
       fieldName: "activity.title",
       render: (item: IActivePlaylistItem) => {
         return (
-          <span className="text-ellipsis overflow-hidden block w-100">
+          <span className={classNames('text-ellipsis overflow-hidden block w-100')}>
             {item?.name}
           </span>
         );
@@ -51,7 +54,7 @@ const HomePage: React.FC = () => {
       fieldName: "activity.activityType.title",
       render: (item: IActivePlaylistItem) => {
         return (
-          <span className="text-ellipsis overflow-hidden block w-16 ">
+          <span className={classNames('text-ellipsis overflow-hidden block w-16')}>
             {item?.extension}
           </span>
         );
@@ -81,10 +84,19 @@ const HomePage: React.FC = () => {
                 items={playlist}
                 columns={columns}
                 loading={listLoading}
-                onSelect={(child: IActivePlaylistItem) => {
-                  console.log(child)
+                onClick={(child: IActivePlaylistItem) => {
+                  if(child?.index) {
+                    selectItemRemotePlayer(child.index)
+                  }
                 }}
-                selection={undefined}
+                onDoubleClick={(child: IActivePlaylistItem) => {
+                  if(child?.index) {
+                    playItemRemotePlayer(child.index)
+                  }
+                }}
+                selection={{
+                  index: Number(playerState?.itemId)
+                } as any}
               />
             </div>
             <div className="block xl:hidden">
@@ -95,11 +107,10 @@ const HomePage: React.FC = () => {
                       key={i.toString() + item.name} // random number as key, does not really matter, is for react rendering
                       className="flex items-center space-x-2 sm:space-x-4 p-1 sm:p-4 hover:bg-grey-900 text-white hover:text-gold cursor-pointer"
                       onClick={() => {
-                        // if (item.type === "directory") {
-                        //   setSelectedNode(item);
-                        //   setNodeHistorie([...nodeHistorie, item]);
-                        // }
-                        console.log(item);
+                        console.log("");
+                      }}
+                      onDoubleClick={() => {
+                        console.log("");
                       }}
                     >
                       <div className="flex-1 min-w-0">

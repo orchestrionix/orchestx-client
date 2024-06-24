@@ -55,6 +55,44 @@ export async function prevRemotePlayer() {
   }
 }
 
+export async function playItemRemotePlayer(
+  songIndex: number
+) {
+  const response = await fetch("http://localhost:4000/api/play-item-remote-player", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ songIndex }),
+  });
+
+  if (!response.ok) {
+    toastError("Network response was not ok.");
+  } else {
+    const data = await response.json();
+    return data;
+  }
+}
+
+export async function selectItemRemotePlayer(
+  songIndex: number
+) {
+  const response = await fetch("http://localhost:4000/api/select-item-remote-player", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ songIndex }),
+  });
+
+  if (!response.ok) {
+    toastError("Network response was not ok.");
+  } else {
+    const data = await response.json();
+    return data;
+  }
+}
+
 //=========================================================================================
 //=========================================================================================
 //=========================================================================================

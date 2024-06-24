@@ -170,7 +170,7 @@ const Search: React.FC = () => {
                 items={selectedNode?.children ? selectedNode.children : []}
                 columns={columns}
                 loading={treeLoading}
-                onSelect={(child: IDirectoryItem) => {
+                onClick={(child: IDirectoryItem) => {
                   if (child.type === "directory") {
                     setSelectedNode(child);
                     setNodeHistorie([...nodeHistorie, child]);

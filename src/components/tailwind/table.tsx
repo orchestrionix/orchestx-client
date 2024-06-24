@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* This example requires Tailwind CSS v2.0+ */
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { classNames } from "../../utils";
 import { useScrollPosition, Scroll } from "../../utils/hooks/useScrollPosition";
 
@@ -29,7 +29,8 @@ interface TableProps {
   // shimmer?: boolean;
   loading?: boolean;
   // shimmerLength?: number;
-  onSelect?: (item: any) => void;
+  onClick?: (item: any) => void;
+  onDoubleClick?: (item: any) => void;
   selection?: any;
 }
 
@@ -40,7 +41,8 @@ const Table: React.FC<TableProps> = ({
   loadMoreCallback = () => ({}),
   lazyLoading,
   loading,
-  onSelect,
+  onClick,
+  onDoubleClick,
   selection,
 }) => {
   const ref = useRef(null);
@@ -48,6 +50,7 @@ const Table: React.FC<TableProps> = ({
     wait: 500,
     element: ref,
   });
+  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const isRefBottomAboveViewport = (input: Scroll): boolean => {
     if (input && input.rect && input.viewport) {
@@ -66,6 +69,20 @@ const Table: React.FC<TableProps> = ({
       }
     }
   }, [scroll]);
+
+  const handleClick = (item: any) => {
+    if (clickTimeout) {
+      clearTimeout(clickTimeout);
+      setClickTimeout(null);
+      if (onDoubleClick) onDoubleClick(item);
+    } else {
+      const timeout = setTimeout(() => {
+        if (onClick) onClick(item);
+        setClickTimeout(null);
+      }, 250);
+      setClickTimeout(timeout);
+    }
+  };
 
   return (
     <div className="mt-4 flex flex-col text-white">
@@ -152,11 +169,9 @@ const Table: React.FC<TableProps> = ({
                         key={`${item.id}_${i}`}
                         className={classNames(
                           "hover:bg-grey-900 hover:text-gold rounded-xl",
-                          selection && "bg-grey-900",
+                          (selection?.index && selection?.index === item?.index) ? "bg-grey-900 text-gold" : '',
                         )}
-                        onClick={() => {
-                          if (onSelect) onSelect(item);
-                        }}
+                        onClick={() => handleClick(item)}
                       >
 
                           <td
