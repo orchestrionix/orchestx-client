@@ -6,6 +6,7 @@ import { formatTime, getPath, parseSongString, positionTimeLine } from "../../ut
 import { nextRemotePlayer, prevRemotePlayer, toggelRemotePlayer } from "../../actions";
 import { STATUS_PLAYING } from "../../utils/constants";
 import { PlayerContext } from "../../playerProvider";
+import PlayerControleNew from "./t";
 
 
 export default function PlayerControle() {
@@ -149,16 +150,7 @@ export default function PlayerControle() {
                 </div>
               </div>
 
-              <div>
-                <div className="relative h-1 bg-neutral-600">
-                  <div
-                    className="absolute h-full bg-gold flex items-center justify-end"
-                    style={timeLineStyle}
-                  >
-                    <div className="rounded-full w-3 h-3 bg-white shadow z-10"></div>
-                  </div>
-                </div>
-              </div>
+              <PlayerControleNew/>
 
               <div className="flex justify-between text-xs font-semibold px-4 py-2 xl:p-0">
                 <div className=" w-24 text-left text-gray-200">{formatTime(playerState?.position ? playerState?.position : 0)}</div>

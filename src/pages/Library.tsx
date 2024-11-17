@@ -23,7 +23,7 @@ const PlaylistItem: React.FC<IPlaylist> = ({ index, playlistName, songs }) => {
   )}`;
 
   return (
-    <div key={index} className="p-2 w-1/2 lg:w-1/3 xl:w-1/4 relative">
+    <>
       <div className="group relative p-4 rounded-xl bg-black sm:bg-grey-900">
         <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg relative">
           {/* Image Background */}
@@ -58,13 +58,17 @@ const PlaylistItem: React.FC<IPlaylist> = ({ index, playlistName, songs }) => {
           </h3>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
 const Library: React.FC = () => {
   const [listsLoading, setListsLoading] = useState(true);
   const [playlists, setPlaylists] = useState<IPlaylist[]>([]);
+
+  const [selectedPlaylist, setSelectedPlaylist] = useState<
+    IPlaylist | undefined
+  >(undefined);
 
   useEffect(() => {
     async function fetchData() {
@@ -79,37 +83,51 @@ const Library: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* First Section: Takes necessary height only */}
-      <section className="pl-2 sm:pl-2">
-        <h2 className="text-md font-medium text-white">Library</h2>
-      </section>
+      {selectedPlaylist ? (
+        <></>
+      ) : (
+        <>
+          {/* First Section: Takes necessary height only */}
+          <section className="pl-2 sm:pl-2">
+            <h2 className="text-md font-medium text-white">Library</h2>
+          </section>
 
-      {/* Second Section: Takes up all remaining space and scrolls if needed */}
-      <section className="flex-grow overflow-auto">
-        {listsLoading ? (
-          <div className="grid place-items-center h-4/5">
-            <div className=" mx-auto inline">
-              <BeatLoader color="#CCA483" size={25} />
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="w-full h-full">
-              <div className="flex flex-wrap -p-2 h-full">
-                {playlists.map((list, index) => (
-                  <PlaylistItem
-                    key={index}
-                    index={list.index}
-                    playlistName={list.playlistName}
-                    songs={list.songs}
-                    path={list.path}
-                  />
-                ))}
+          {/* Second Section: Takes up all remaining space and scrolls if needed */}
+          <section className="flex-grow overflow-auto">
+            {listsLoading ? (
+              <div className="grid place-items-center h-4/5">
+                <div className=" mx-auto inline">
+                  <BeatLoader color="#CCA483" size={25} />
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </section>
+            ) : (
+              <>
+                <div className="w-full h-full">
+                  <div className="flex flex-wrap -p-2 h-full">
+                    {playlists.map((list, index) => (
+                      <div
+                        key={index}
+                        className="p-2 w-1/2 lg:w-1/3 xl:w-1/4 relative cursor-pointer"
+                        onClick={() => {
+                          setSelectedPlaylist(list);
+                        }}
+                      >
+                        <PlaylistItem
+                          key={index}
+                          index={list.index}
+                          playlistName={list.playlistName}
+                          songs={list.songs}
+                          path={list.path}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </section>
+        </>
+      )}
     </div>
   );
 };

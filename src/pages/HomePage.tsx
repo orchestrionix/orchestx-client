@@ -28,6 +28,7 @@ const HomePage: React.FC = () => {
       key: "column0",
       name: "Rhythm",
       fieldName: "activity.rhythm",
+      classes: 'hidden lg:table-cell',
       render: (item: IActivePlaylistItem) => {
         return (
           <span className={classNames('text-ellipsis overflow-hidden block w-100')}>
@@ -52,9 +53,10 @@ const HomePage: React.FC = () => {
       key: "column2",
       name: "Type",
       fieldName: "activity.activityType.title",
+      classes: 'hidden xl:table-cell',
       render: (item: IActivePlaylistItem) => {
         return (
-          <span className={classNames('text-ellipsis overflow-hidden block w-16')}>
+          <span className={classNames('text-ellipsis overflow-hidden block w-100')}>
             {item?.extension}
           </span>
         );
@@ -79,7 +81,7 @@ const HomePage: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="hidden xl:block">
+            <div className="">
               <Table
                 items={playlist}
                 columns={columns}
@@ -99,7 +101,7 @@ const HomePage: React.FC = () => {
                 } as any}
               />
             </div>
-            <div className="block xl:hidden">
+            {/* <div className="block xl:hidden">
               {playlist && playlist.length > 0 ? (
                 <>
                   {playlist.map((item, i) => (
@@ -136,7 +138,7 @@ const HomePage: React.FC = () => {
                   )}
                 </>
               )}
-            </div>
+            </div> */}
           </>
         )}
       </section>

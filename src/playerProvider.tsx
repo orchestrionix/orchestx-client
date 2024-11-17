@@ -24,7 +24,6 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const fetchRemotePlayerState = async () => {
-      // Replace with your data fetching logic
       const newPlayerState = await getRemotePlayerState();
 
       if (newPlayerState?.state) {
@@ -32,7 +31,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
       }
     };
 
-    const intervalId = setInterval(fetchRemotePlayerState, 500);
+    const intervalId = setInterval(fetchRemotePlayerState, 1000);
 
     return () => clearInterval(intervalId);
   }, []);

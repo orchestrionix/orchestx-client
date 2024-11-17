@@ -17,6 +17,7 @@ export interface IColumn {
   isSorted?: boolean;
   name: string;
   fieldName?: string;
+  classes?: string;
   render: (item: any) => any;
 }
 
@@ -97,7 +98,7 @@ const Table: React.FC<TableProps> = ({
                 <tr>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-md sm:pl-6 capitalized w-20"
+                    className="py-3.5 pl-4 pr-3 text-left text-md sm:pl-6 capitalized w-20 hidden xl:table-cell"
                     key={`col-custom`}
                   >
                     <span>{""}</span>
@@ -106,8 +107,7 @@ const Table: React.FC<TableProps> = ({
                     return (
                       <th
                         scope="col"
-                        className="py-3.5 pl-4 pr-3 text-left text-sm
-                         sm:pl-6 capitalized"
+                        className={classNames('py-3.5 pl-4 pr-3 text-left text-sm sm:pl-6 capitalized', col?.classes ? col.classes : '')}
                         key={`col-${i}_${col.name}`}
                         onClick={
                           col.sortable
@@ -168,14 +168,14 @@ const Table: React.FC<TableProps> = ({
                       <tr
                         key={`${item.id}_${i}`}
                         className={classNames(
-                          "hover:bg-grey-900 hover:text-gold rounded-xl",
+                          "hover:bg-grey-900 hover:text-gold rounded-xl cursor-pointer",
                           (selection?.index && selection?.index === item?.index) ? "bg-grey-900 text-gold" : '',
                         )}
                         onClick={() => handleClick(item)}
                       >
 
                           <td
-                            className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-small sm:pl-6"
+                            className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-small sm:pl-6 hidden xl:table-cell"
                             key={`custom_colnumber`}
                           >
                             <span className="text-ellipsis overflow-hidden">
@@ -185,7 +185,7 @@ const Table: React.FC<TableProps> = ({
                           {columns.map((col, index) => {
                             return (
                               <td
-                                className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-small sm:pl-6"
+                                className={classNames("whitespace-nowrap py-4 pl-4 pr-3 text-sm font-small sm:pl-6", col?.classes ? col?.classes : '')}
                                 key={`${item.id}_${col.key}_${index}`}
                               >
                                 {col.render(item)}
