@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { PlayerStateType } from './types';
-import { getRemotePlayerState } from './actions';
 
 interface PlayerContextType {
   playerState: PlayerStateType | null;
@@ -15,25 +14,42 @@ interface PlayerProviderProps {
 
 export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   const [playerState, setPlayerState] = useState<PlayerStateType | null>(null);
-  const [counter, setCounter] = useState<number>(1);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
   const updatePlayerState = (newPlayerState: PlayerStateType) => {
     setPlayerState(newPlayerState);
-    setCounter(newPlayerState.position);
   };
 
   useEffect(() => {
-    const fetchRemotePlayerState = async () => {
-      const newPlayerState = await getRemotePlayerState();
+    // Create WebSocket connection
+    const ws = new WebSocket('ws://localhost:4000');
 
-      if (newPlayerState?.state) {
-        updatePlayerState(newPlayerState?.state);
+    ws.onopen = () => {
+      console.log('WebSocket Connected');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data?.state) {
+        updatePlayerState(data.state);
       }
     };
 
-    const intervalId = setInterval(fetchRemotePlayerState, 1000);
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
 
-    return () => clearInterval(intervalId);
+    ws.onclose = () => {
+      console.log('WebSocket disconnected');
+      // Optional: Implement reconnection logic here
+    };
+
+    setSocket(ws);
+
+    // Cleanup on unmount
+    return () => {
+      ws.close();
+    };
   }, []);
 
   return (

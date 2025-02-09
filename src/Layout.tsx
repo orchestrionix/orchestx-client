@@ -109,9 +109,9 @@ const Layout = () => {
                       />
                     </div>
                     <nav className="flex flex-1 flex-col">
-                      <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                      <ul className="flex flex-1 flex-col gap-y-7">
                         <li>
-                          <ul role="list" className="-mx-2 space-y-2">
+                          <ul className="-mx-2 space-y-2">
                             {navigation.map((item) => (
                               <li key={item.name}>
                                 <Link 
@@ -142,7 +142,7 @@ const Layout = () => {
                           <div className="text-xs font-semibold leading-6 text-white">
                             Configuration
                           </div>
-                          <ul role="list" className="-mx-2 mt-2 space-y-2">
+                          <ul className="-mx-2 mt-2 space-y-2">
                             {teams.map((team) => (
                               <li key={team.name}>
                                 <Link 
@@ -190,9 +190,9 @@ const Layout = () => {
               />
             </div>
             <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
+              <ul  className="flex flex-1 flex-col gap-y-7">
                 <li>
-                  <ul role="list" className="-mx-2 space-y-4">
+                  <ul className="-mx-2 space-y-4">
                     {navigation.map((item) => (
                       <li key={item.name}>
                         <Link 
@@ -223,7 +223,7 @@ const Layout = () => {
                   <div className="text-xs font-semibold leading-6 text-white">
                     Configuration
                   </div>
-                  <ul role="list" className="-mx-2 mt-2 space-y-3">
+                  <ul className="-mx-2 mt-2 space-y-3">
                     {teams.map((team) => (
                       <li key={team.name}>
                         <Link 
