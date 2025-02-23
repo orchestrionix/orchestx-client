@@ -9,22 +9,25 @@ import Library from './pages/library';
 import Search from './pages/search';
 import Home from './pages/home';
 import PlaylistDetail from './pages/library/name';
+import { ModalProvider } from './contexts/ModalContext';
 
 const App: React.FC = () => {
   return (
-    <PlayerProvider>
-      <ToastContainer />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="search" element={<Search />} />
-            <Route path="library" element={<Library />} />
-            <Route path="library/:name" element={<PlaylistDetail />} />
-          </Route>
-        </Routes>
-      </Router>
-    </PlayerProvider>
+    <ModalProvider>
+      <PlayerProvider>
+        <ToastContainer />
+        <Router>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="search" element={<Search />} />
+              <Route path="library" element={<Library />} />
+              <Route path="library/:name" element={<PlaylistDetail />} />
+            </Route>
+          </Routes>
+        </Router>
+      </PlayerProvider>
+    </ModalProvider>
   );
 };
 export default App;  // Make sure to use default export here
