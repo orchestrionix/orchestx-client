@@ -4,19 +4,26 @@ import { FiMusic, FiPlay, FiPause, FiX } from "react-icons/fi";
 import { PlayerContext } from "../../playerProvider";
 import { IActivePlaylistItem } from "../../types";
 import { getRemotePlayerActivePlaylist, playItemRemotePlayer, selectItemRemotePlayer } from "../../actions";
-import { classNames, parsePlaylistString, parseSongDetailsPlaylist } from "../../utils";
+import { parsePlaylistString, parseSongDetailsPlaylist } from "../../utils";
 import Breadcrumb from "../../components/tailwind/breadcrumbs";
 
 const Home: React.FC = () => {
   const context = useContext(PlayerContext);
   const playerState = context?.playerState;
   const [listLoading, setListLoading] = useState(true);
+
   const [playlist, setPlaylist] = useState<IActivePlaylistItem[]>([]);
+  const [playlistName, setPlaylistName] = useState<string>("");
 
   useEffect(() => {
     async function fetchData() {
-      const list = await getRemotePlayerActivePlaylist();
-      if (list) setPlaylist(parsePlaylistString(list));
+      const playlistData = await getRemotePlayerActivePlaylist();
+
+      if (playlistData.playlist) {
+        setPlaylist(parsePlaylistString(playlistData.playlist));
+        setPlaylistName(playlistData.playlistName);
+      }
+
       setListLoading(false);
     }
 
@@ -58,18 +65,15 @@ const Home: React.FC = () => {
       </header>
 
       {/* Now Playing Header */}
-      <div className="bg-black/20 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <div className="h-16 w-16 bg-white/5 rounded-lg flex items-center justify-center">
-            <FiMusic className="w-8 h-8 text-gold" />
+      <div className="bg-black/20 px-6 py-6 border-b border-white/5">
+        <div className="flex items-center gap-6">
+          <div className="h-20 w-20 bg-white/5 rounded-xl flex items-center justify-center shadow-lg">
+            <FiMusic className="w-10 h-10 text-gold/80" />
           </div>
-          <div>
-            <div className="text-gold font-medium text-sm uppercase tracking-wider mb-1">Now Playing</div>
-            <div className="text-white text-xl font-semibold mb-1">
-              {"No Playlist Selected"}
-            </div>
-            <div className="text-white/60 text-sm">
-              {playlist.length} {playlist.length === 1 ? 'Track' : 'Tracks'} in Queue
+          <div className="flex flex-col gap-1">
+            <div className="text-gold/90 font-medium text-sm uppercase tracking-wider">Now Playing</div>
+            <div className="text-white text-2xl font-bold">
+              {playlistName || "No Playlist Selected"}
             </div>
           </div>
         </div>
@@ -104,8 +108,11 @@ const Home: React.FC = () => {
                 {/* Table Body */}
                 <div className="divide-y divide-white/10">
                   {playlist.map((item, index) => {
-                    const songInfo = parseSongDetailsPlaylist(item.name);
+
                     const isCurrentItem = Number(playerState?.itemId) === item.index;
+
+                    // from the item.name remove any digits and special characters
+                    const name = item.name.replace(/[0-9]/g, "").replace(/[^\w\s]/g, "");
                     
                     return (
                       <div
@@ -124,14 +131,14 @@ const Home: React.FC = () => {
                             className={`${isCurrentItem ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
                           >
                             {isCurrentItem ? (
-                              <FiPause className="w-5 h-5" />
+                              <FiPlay className="w-5 h-5" />
                             ) : (
                               <FiPlay className="w-5 h-5" />
                             )}
                           </button>
                         </div>
-                        <div className="truncate">{songInfo.name}</div>
-                        <div className="text-center text-white/60">{songInfo.rhythm}</div>
+                        <div className="truncate">{name}</div>
+                        <div className="text-center text-white/60">{item.rhythm}</div>
                         <div className="flex justify-center">
                           <div className="opacity-0 group-hover:opacity-100 text-white/60 transition-opacity w-5 h-5" />
                         </div>

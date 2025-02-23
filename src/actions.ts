@@ -1,4 +1,4 @@
-import { IDirectoryItem, IPlaylist, PlaylistType } from "./types";
+import { IActivePlaylistItem, IDirectoryItem, IPlaylist, PlaylistType } from "./types";
 import { toastError } from "./utils/toasts";
 
 export async function getRemotePlayerState() {
@@ -12,7 +12,10 @@ export async function getRemotePlayerState() {
   return data;
 }
 
-export async function getRemotePlayerActivePlaylist() {
+export async function getRemotePlayerActivePlaylist(): Promise<{
+  playlist: string[];
+  playlistName: string;
+}> {
   const response = await fetch("http://localhost:4000/api/get-remote-player-active-playlist");
 
   if (!response.ok) {
@@ -20,7 +23,11 @@ export async function getRemotePlayerActivePlaylist() {
   }
 
   const data = await response.json();
-  return data.playlist;
+  
+  return {
+    playlist: data.playlist,
+    playlistName: data.playlistName || "Unknown Playlist",
+  };
 }
 
 export async function toggelRemotePlayer() {
