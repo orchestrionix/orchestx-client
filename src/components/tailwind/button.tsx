@@ -23,46 +23,46 @@ interface ButtonProps
 // Fluent UI style button variants with gradient glass effect
 const variants = {
   primary: `
-    bg-primary-500/80 hover:bg-primary-500/90 active:bg-primary-500/95
+    bg-gold/80 hover:bg-gold/90 active:bg-gold/95
     text-white/90 hover:text-white
     backdrop-blur-xl
     border border-white/20
     shadow-[inset_0_1px_0px_rgba(255,255,255,0.18)]
-    dark:bg-primary-600/80 dark:hover:bg-primary-600/90
+    dark:bg-gold/80 dark:hover:bg-gold/90
   `,
   secondary: `
-    bg-danger-500/80 hover:bg-danger-500/90 active:bg-danger-500/95
+    bg-red/80 hover:bg-red/90 active:bg-red/95
     text-white/90 hover:text-white
     backdrop-blur-xl
     border border-white/20
     shadow-[inset_0_1px_0px_rgba(255,255,255,0.18)]
-    dark:bg-danger-600/80 dark:hover:bg-danger-600/90
+    dark:bg-red/80 dark:hover:bg-red/90
   `,
   tertiary: `
-    bg-gray-500/10 hover:bg-gray-500/20 active:bg-gray-500/30
-    text-gray-700 dark:text-gray-200
+    bg-grey-500/10 hover:bg-grey-500/20 active:bg-grey-500/30
+    text-grey-100 dark:text-grey-100
     backdrop-blur-xl
     border border-white/20
     shadow-[inset_0_1px_0px_rgba(255,255,255,0.18)]
-    dark:bg-gray-400/20 dark:hover:bg-gray-400/30
+    dark:bg-grey-700/20 dark:hover:bg-grey-700/30
   `,
   quaternary: `
-    bg-orange-500/80 hover:bg-orange-500/90 active:bg-orange-500/95
+    bg-orange/80 hover:bg-orange/90 active:bg-orange/95
     text-white/90 hover:text-white
     backdrop-blur-xl
     border border-white/20
     shadow-[inset_0_1px_0px_rgba(255,255,255,0.18)]
-    dark:bg-orange-600/80 dark:hover:bg-orange-600/90
+    dark:bg-orange/80 dark:hover:bg-orange/90
   `
 };
 
-// Fluent UI style sizes
+// Fluent UI style sizes updated to match config
 const sizes = {
   xs: 'px-2.5 py-1.5 text-xs',
-  sm: 'px-3 py-2 text-sm',
+  sm: 'px-3 py-2 text-small',
   md: 'px-4 py-2 text-sm',
   lg: 'px-4 py-2 text-base',
-  xl: 'px-6 py-3 text-base'
+  xl: 'px-6 py-3 text-md'
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -91,7 +91,7 @@ export const Button: React.FC<ButtonProps> = ({
         // Base styles
         'inline-flex items-center justify-center rounded-md font-medium',
         'transition-all duration-200',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:ring-offset-2',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
         'relative overflow-hidden',
         'backdrop-saturate-150 backdrop-filter',

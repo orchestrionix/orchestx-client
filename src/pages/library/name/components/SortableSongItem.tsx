@@ -3,8 +3,8 @@ import {
   } from "@dnd-kit/sortable";
 import { IPlaylistSong } from "../../../../types";
 import { CSS } from "@dnd-kit/utilities";
-import { FiAirplay, FiPause, FiPlay, FiX } from "react-icons/fi";
-import { getPath, parseSongString } from "../../../../utils";
+import { FiMoreHorizontal, FiPause, FiPlay, FiX } from "react-icons/fi";
+import { parseSongDetailsPlaylist } from "../../../../utils";
 
 export interface SortableSongItemProps {
     song: IPlaylistSong;
@@ -36,40 +36,42 @@ export interface SortableSongItemProps {
       opacity: isDragging ? 0.5 : 1,
     };
 
-    const parsedSong = parseSongString(song.path);
-    const name = parsedSong.name;
-    const rhythm = parsedSong.rhythm;
-    const imageSrc = getPath(rhythm);
+    const songInfo = parseSongDetailsPlaylist(song.name);
   
     return (
       <div
         ref={setNodeRef}
+        {...attributes}
         style={style}
-        className={`grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 px-4 py-3 text-white hover:bg-white/5 rounded-lg transition-colors group ${
+        className={`grid grid-cols-[50px_50px_1fr_160px_50px] items-center px-4 py-3 text-white hover:bg-white/5 transition-colors group cursor-grab active:cursor-grabbing ${
           isDragging ? "bg-white/5" : ""
         }`}
       >
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing text-white/60 hover:text-white"
-        >
-          <FiAirplay className="w-5 h-5" />
+        <div className="text-white/60 text-center">{index + 1}</div>
+        <div className="flex justify-center" {...listeners}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlay(index);
+            }}
+            className={`${isPlaying ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
+          >
+            {isPlaying ? <FiPause className="w-5 h-5" /> : <FiPlay className="w-5 h-5" />}
+          </button>
         </div>
-        <div className="w-8 text-white/60">{index + 1}</div>
-        <button
-          onClick={() => onPlay(index)}
-          className={`w-8 ${isPlaying ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
-        >
-          {isPlaying ? <FiPause className="w-5 h-5" /> : <FiPlay className="w-5 h-5" />}
-        </button>
-        <div className="truncate">{parsedSong.name}</div> 
-        <button
-          onClick={() => onDelete(index)}
-          className="w-8 opacity-0 group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity"
-        >
-          <FiX className="w-5 h-5" />
-        </button>
+        <div className="truncate" {...listeners}>{songInfo.name}</div>
+        <div className="text-center text-white/60" {...listeners}>{songInfo.rhythm}</div>
+        <div className="flex justify-center">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(index);
+            }}
+            className="opacity-0 group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity"
+          >
+            <FiX className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     );
   };

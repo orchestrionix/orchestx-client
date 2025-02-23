@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import { ModalV2 } from "../../components/tailwind/modalV2";
 import { Slideover } from "../../components/tailwind/slideover";
 import { Modal } from "../../components/tailwind/modal";
+import Breadcrumb from "../../components/tailwind/breadcrumbs";
+import Button from "../../components/tailwind/button";
 
 
 const Library: React.FC = () => {
@@ -143,21 +145,44 @@ const Library: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div>
-      <section className="pl-2 sm:pl-2">
-        <h2 className="text-md font-medium text-white">Library</h2>
-      </section>
+      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-4">Library</h1>
+              
+            </div>
+            <Breadcrumb 
+              home={{ href: "/", name: "home" }} 
+              items={[
+                {
+                  name: "Library",
+                  href: "/library",
+                  current: true
+                }
+              ]} 
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <Button 
+              
+              primary
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedPlaylist({name: ""});
+                setOpenPlaylistDetail(true);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Create Playlist
+            </Button> 
+          </div>
+        </div>
+      </header>
 
-      <button className="bg-primary text-white px-4 py-2 rounded-md" onClick={(e) => {
-        e.preventDefault();
-        setSelectedPlaylist({name: ""});
-        setOpenPlaylistDetail(true);
-      }}>
-        Create Playlist
-      </button>
-      </div>
-
-      <section className="flex-grow overflow-auto">
+      <section className="flex-grow overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         {listsLoading ? (
           <div className="grid place-items-center h-4/5">
             <div className="mx-auto inline">
@@ -166,25 +191,32 @@ const Library: React.FC = () => {
           </div>
         ) : (
           <div className="w-full h-full">
-            <div className="flex flex-wrap -p-2 h-full">
-              {playlists.map((list, index) => (
-                <div
-                  key={index}
-                  className="p-2 w-1/2 lg:w-1/3 xl:w-1/4 relative cursor-pointer"
-                  onClick={() => {
-                    navigate(`/library/${encodeURIComponent(list.playlistName)}`);
-                  }}
-                >
-                  <PlaylistItem
+            {playlists.length === 0 ? (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-400 mb-4">No playlists yet</h3>
+                <p className="text-sm text-gray-500">Create your first playlist to get started</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {playlists.map((list, index) => (
+                  <div
                     key={index}
-                    index={list.index}
-                    playlistName={list.playlistName}
-                    songs={list.songs}
-                    path={list.path}
-                  />
-                </div>
-              ))}
-            </div>
+                    className="relative cursor-pointer"
+                    onClick={() => {
+                      navigate(`/library/${encodeURIComponent(list.playlistName)}`);
+                    }}
+                  >
+                    <PlaylistItem
+                      key={index}
+                      index={list.index}
+                      playlistName={list.playlistName}
+                      songs={list.songs}
+                      path={list.path}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </section>

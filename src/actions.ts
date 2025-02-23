@@ -286,3 +286,24 @@ export async function renameRemotePlaylist(oldPlaylistName: string, newPlaylistN
     throw error;
   }
 }
+
+export async function loadPlaylistRemotePlayer(playlistPath: string, playIndex: number) {
+  try {
+    console.log("Loading playlist on remote player:", playlistPath, playIndex);
+
+    const response = await fetch("http://localhost:4000/api/load-playlist-remote-player", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ path: playlistPath, playIndex: playIndex }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to load playlist on remote player.");
+    }
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}

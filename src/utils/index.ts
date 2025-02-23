@@ -55,6 +55,74 @@ export function formatTime(milliseconds: number): string {
   }
 }
 
+export function parseSongDetailsPlaylist(s?: string): {
+  extension: string;
+  name: string;
+  rhythm: string;
+} {
+   // Default return value in case of errors
+  const defaultResult = {
+    extension: "",
+    name: "",
+    rhythm: ""
+  };
+
+  try {
+    // Check if input is undefined or empty
+    if (!s || s.trim() === "") {
+      return defaultResult;
+    }
+
+    // Find the last occurrence of "."
+    const lastDotIndex = s.lastIndexOf(".");
+    if (lastDotIndex === -1) {
+      return defaultResult; // No file extension found
+    }
+
+    const namePart = s.substring(0, lastDotIndex).trim(); // Everything before the last dot
+    const extension = s.substring(lastDotIndex + 1).trim(); // Everything after the last dot
+
+    // Validate extension (ensure it's a reasonable file type)
+    if (!/^[a-zA-Z0-9]+$/.test(extension)) {
+      return defaultResult; // Invalid extension
+    }
+
+    // Split namePart on the first " -"
+    const firstHyphenIndex = namePart.indexOf(" -");
+    let rhythm = "";
+    let name = namePart;
+
+    if (firstHyphenIndex !== -1) {
+      rhythm = namePart.substring(0, firstHyphenIndex).trim();
+      name = namePart.substring(firstHyphenIndex + 2).trim(); // +2 to remove ' -'
+    }
+
+    // Remove trailing numbers from the name
+    name = name.replace(/\d+$/, "").trim();
+
+    // Remove leading and trailing hyphens from the name
+    name = name.replace(/^-+|-+$/g, "").trim();
+
+    // Ensure name is not empty after trimming
+    if (!name) {
+      return defaultResult;
+    }
+
+    return {
+      extension,
+      name,
+      rhythm
+    };
+  } catch (error) {
+    // Catch unexpected errors and return default
+    console.error("Error parsing song details:", error);
+    return defaultResult;
+  }
+
+}
+
+
+
 export function parseSongString(s?: string): {
   index: number;
   rhythm: string;

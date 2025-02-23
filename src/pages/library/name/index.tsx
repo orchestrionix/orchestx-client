@@ -7,6 +7,7 @@ import {
   deleteRemotePlaylist, 
   deleteRemoteSongFromPlaylistByIndex, 
   getRemoteAllPlaylists,
+  loadPlaylistRemotePlayer,
   renameRemotePlaylist,
   updateRemotePlaylist 
 } from "../../../actions";
@@ -26,6 +27,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableSongItem from "./components/SortableSongItem";
+import Breadcrumb from "../../../components/tailwind/breadcrumbs";
 
 
 const PlaylistDetail: React.FC = () => {
@@ -64,6 +66,7 @@ const PlaylistDetail: React.FC = () => {
       const found = playlists?.find(p => p.playlistName === name);
       if (found) {
         setPlaylist(found);
+        console.log(found);
         setNewName(found.playlistName);
       }
       setLoading(false);
@@ -152,14 +155,18 @@ const PlaylistDetail: React.FC = () => {
   const color2 = `hsl(${(hash + 180) % 360}, 70%, 50%)`;
 
   // Placeholder for play functions (you'll implement these)
-  const handlePlayPlaylist = () => {
-    setIsPlaylistPlaying(!isPlaylistPlaying);
-    // Your play logic here
+  const handlePlayPlaylist = async () => {
+    if (playlist) {
+      await loadPlaylistRemotePlayer(playlist.path, 0);
+      navigate("/");
+    }
   };
 
-  const handlePlaySong = (index: number) => {
-    setCurrentPlayingIndex(currentPlayingIndex === index ? null : index);
-    // Your play logic here
+  const handlePlaySong = async (index: number) => {
+    if (playlist) {
+      await loadPlaylistRemotePlayer(playlist.path, index);
+      navigate("/");
+    }
   };
 
   if (loading) {
@@ -176,7 +183,28 @@ const PlaylistDetail: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header Section */}
+      {/* Add header with breadcrumbs */}
+      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <div className="flex items-center gap-4">
+          <Breadcrumb 
+            home={{ href: "/", name: "home" }} 
+            items={[
+              {
+                name: "Library",
+                href: "/library",
+                current: false
+              },
+              {
+                name: playlist?.playlistName || "",
+                href: `/library/${encodeURIComponent(playlist?.playlistName || "")}`,
+                current: true
+              }
+            ]} 
+          />
+        </div>
+      </header>
+
+      {/* Playlist Header Section */}
       <div className="relative p-6 mb-8">
         <div
           className="absolute inset-0 opacity-30"
@@ -259,12 +287,12 @@ const PlaylistDetail: React.FC = () => {
 
       {/* Tracks Section */}
       <div className="flex-1 px-6">
-        <div className="grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 text-white/60 text-sm px-4 py-2 border-b border-white/10">
-          <div className="w-8"></div> {/* For drag handle */}
-          <div className="w-8">#</div>
-          <div className="w-8"></div> {/* For play button */}
+        <div className="grid grid-cols-[50px_50px_1fr_160px_50px] items-center text-white/60 text-sm px-4 py-2 border-b border-white/10">
+          <div className="text-center">#</div>
+          <div></div> {/* For play button */}
           <div>Title</div>
-          <div className="w-8"></div>
+          <div className="text-center">Rhythm</div>
+          <div></div> {/* For delete button */}
         </div>
 
         <DndContext
