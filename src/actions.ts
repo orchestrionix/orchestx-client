@@ -114,25 +114,33 @@ export async function checkRemoteFileExists(filePath: string) {
   return data.exists; // Returns true/false
 }
 
+
+// GOOD ERROR HANDLING, COPY THIS FOR OTHER FUNCTIONS
 export async function createRemotePlaylist(
   playlistName: string,
   songs: string[]
 ) {
-  const response = await fetch("http://localhost:4000/api/create-playlist", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ playlistName, songs }),
-  });
+  try {
+    const response = await fetch("http://localhost:4000/api/create-playlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ playlistName, songs }),
+    });
 
-  if (!response.ok) {
-    toastError("Failed to create playlist.");
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to create playlist.");
+    }
+
+    return data.result;
+  } catch (error: any) {
+    throw error;
   }
-
-  const data = await response.json();
-  return data.result; // Assuming your server returns the created playlist data
 }
+
 
 export async function getRemoteSongsFromPlaylist(playlistName: string) {
   const response = await fetch(
@@ -191,10 +199,6 @@ export async function deleteRemoteSongFromPlaylistByIndex(
   }
 }
 
-//=========================================================================================
-//=========================================================================================
-//=========================================================================================
-
 export async function getRemoteAllPlaylists(): Promise<IPlaylist[]> {
   const response = await fetch("http://localhost:4000/api/get-all-playlists");
 
@@ -215,4 +219,70 @@ export async function getRemoteFileDirectory(): Promise<IDirectoryItem> {
 
   const data = await response.json();
   return data;
+}
+
+export async function deleteRemotePlaylist(playlistName: string) {
+  try {
+    const response = await fetch("http://localhost:4000/api/delete-playlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ playlistName }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to delete playlist.");
+    }
+
+    return data.message;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+export async function updateRemotePlaylist(playlistName: string, songs: string[]) {
+  try {
+    const response = await fetch("http://localhost:4000/api/update-playlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ playlistName, songs }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update playlist.");
+    }
+
+    return data.message;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+export async function renameRemotePlaylist(oldPlaylistName: string, newPlaylistName: string) {
+  try {
+    const response = await fetch("http://localhost:4000/api/rename-playlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ oldPlaylistName, newPlaylistName }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to rename playlist.");
+    }
+
+    return data.message;
+  } catch (error: any) {
+    throw error;
+  }
 }

@@ -1,17 +1,17 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
-import { FiDisc } from "react-icons/fi";
-import { IDirectoryItem, IPlaylist, IPlaylistSong } from '../types';
-import { ChevronRightOutline, DocumentOutline, EllipsisHorizontalSolid, FolderOutline, HomeModernOutline, PlusCircleOutline, XMarkOutline } from '../components/icons';
-import { MenuModal } from '../components/player/menuModal';
-import { toastError, toastSuccess } from '../utils/toasts';
-import { addRemoteSongToPlaylist, getRemoteAllPlaylists, getRemoteFileDirectory } from '../actions';
-import { DEFAULT_ERROR_MESSAGE } from '../utils/constants';
-import { IColumn, Table } from '../components/tailwind/table';
+import { IDirectoryItem, IPlaylist } from '../../types';
+import { addRemoteSongToPlaylist, getRemoteAllPlaylists, getRemoteFileDirectory } from '../../actions';
+import { IColumn, Table } from '../../components/tailwind/table';
+import { ChevronRightOutline, DocumentOutline, EllipsisHorizontalSolid, FolderOutline, HomeModernOutline, PlusCircleOutline, XMarkOutline } from '../../components/icons';
+import { MenuModal } from '../../components/player/menuModal';
+import { toastError, toastSuccess } from '../../utils/toasts';
+import { DEFAULT_ERROR_MESSAGE } from '../../utils/constants';
+
 
 const Search: React.FC = () => {
-  const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
+  // const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
   const [treeLoading, setTreeLoading] = useState(true);
   const [nodeHistorie, setNodeHistorie] = useState<IDirectoryItem[]>([]);
   const [selectedNode, setSelectedNode] = useState<IDirectoryItem | undefined>(
@@ -182,7 +182,7 @@ const Search: React.FC = () => {
             <div className="block xl:hidden">
               {selectedNode?.children && selectedNode?.children.length > 0 ? (
                 <>
-                  {selectedNode?.children.map((item, i) => (
+                  {selectedNode?.children.map((item: IDirectoryItem, i: number) => (
                     <div
                       key={i.toString() + item.name} // random number as key, does not really matter, is for react rendering
                       className="flex items-center space-x-2 sm:space-x-4 p-1 sm:p-4 hover:bg-grey-900 text-white hover:text-gold cursor-pointer"

@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import { IActivePlaylistItem} from "../types";
-import { getRemotePlayerActivePlaylist, playItemRemotePlayer, selectItemRemotePlayer } from "../actions";
 import BeatLoader from "react-spinners/BeatLoader";
-import { IColumn, Table } from "../components/tailwind/table";
-import { classNames, parsePlaylistString } from "../utils";
-import { PlayerContext } from "../playerProvider";
+import { PlayerContext } from "../../playerProvider";
+import { IActivePlaylistItem } from "../../types";
+import { getRemotePlayerActivePlaylist, playItemRemotePlayer, selectItemRemotePlayer } from "../../actions";
+import { classNames, parsePlaylistString } from "../../utils";
+import { IColumn, Table } from "../../components/tailwind/table";
 
-const HomePage: React.FC = () => {
+
+const Home: React.FC = () => {
   const context = useContext(PlayerContext);
   const playerState = context?.playerState;
   const [listLoading, setListLoading] = useState(true);
@@ -146,4 +147,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default Home;

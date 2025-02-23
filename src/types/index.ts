@@ -40,3 +40,11 @@ export interface IPlaylist {
 } 
 
 export interface IActivePlaylistItem { index: number; rhythm: string; name: string; extension: string; }
+
+export interface PlayerContextType {
+  play: (path: string) => void;
+  pause: () => void;
+  status: "ready" | "playing" | "paused" | "unknown";
+  currentSong: string | null;
+  // ... any other existing properties
+}
