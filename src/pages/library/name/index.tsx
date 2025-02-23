@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BeatLoader from "react-spinners/BeatLoader";
-import { FiClock, FiMusic, FiEdit2, FiTrash2, FiX, FiAirplay, FiPlay, FiPause } from "react-icons/fi";
-import { IPlaylist, IPlaylistSong } from "../../../types";
+import { FiMusic, FiEdit2, FiTrash2, FiPlay, FiPause } from "react-icons/fi";
+import { IPlaylist } from "../../../types";
 import { 
   deleteRemotePlaylist, 
   deleteRemoteSongFromPlaylistByIndex, 
@@ -23,74 +23,10 @@ import {
 import {
   SortableContext,
   arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import SortableSongItem from "./components/SortableSongItem";
 
-interface SortableSongItemProps {
-  song: IPlaylistSong;
-  index: number;
-  onDelete: (index: number) => void;
-  onPlay: (index: number) => void;
-  isPlaying?: boolean;
-}
-
-const SortableSongItem: React.FC<SortableSongItemProps> = ({ 
-  song, 
-  index, 
-  onDelete,
-  onPlay,
-  isPlaying = false
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: song.index.toString() });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 px-4 py-3 text-white hover:bg-white/5 rounded-lg transition-colors group ${
-        isDragging ? "bg-white/5" : ""
-      }`}
-    >
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing text-white/60 hover:text-white"
-      >
-        <FiAirplay className="w-5 h-5" />
-      </div>
-      <div className="w-8 text-white/60">{index + 1}</div>
-      <button
-        onClick={() => onPlay(index)}
-        className={`w-8 ${isPlaying ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
-      >
-        {isPlaying ? <FiPause className="w-5 h-5" /> : <FiPlay className="w-5 h-5" />}
-      </button>
-      <div className="truncate">{song.name}</div>
-      <button
-        onClick={() => onDelete(index)}
-        className="w-8 opacity-0 group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity"
-      >
-        <FiX className="w-5 h-5" />
-      </button>
-    </div>
-  );
-};
 
 const PlaylistDetail: React.FC = () => {
   const navigate = useNavigate();
