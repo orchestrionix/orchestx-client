@@ -1,9 +1,11 @@
 import { IActivePlaylistItem, IDirectoryItem, IPlaylist, PlaylistType } from "./types";
 import { toastError } from "./utils/toasts";
 
+export const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:4000`;
+
 export async function getRemotePlayerState() {
   const response = await fetch(
-    "http://localhost:4000/api/get-remote-player-state"
+    `${API_BASE_URL}/api/get-remote-player-state`
   );
   if (!response.ok) {
     throw new Error("Network response was not ok.");
@@ -16,7 +18,7 @@ export async function getRemotePlayerActivePlaylist(): Promise<{
   playlist: string[];
   playlistName: string;
 }> {
-  const response = await fetch("http://localhost:4000/api/get-remote-player-active-playlist");
+  const response = await fetch(`${API_BASE_URL}/api/get-remote-player-active-playlist`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch all playlists.");
@@ -32,7 +34,7 @@ export async function getRemotePlayerActivePlaylist(): Promise<{
 
 export async function toggelRemotePlayer() {
   const response = await fetch(
-    "http://localhost:4000/api/toggle-remote-player"
+    `${API_BASE_URL}/api/toggle-remote-player`
   );
   if (!response.ok) {
     toastError("Network response was not ok.");
@@ -43,7 +45,7 @@ export async function toggelRemotePlayer() {
 }
 
 export async function nextRemotePlayer() {
-  const response = await fetch("http://localhost:4000/api/next-remote-player");
+  const response = await fetch(`${API_BASE_URL}/api/next-remote-player`);
   if (!response.ok) {
     toastError("Network response was not ok.");
   } else {
@@ -53,7 +55,7 @@ export async function nextRemotePlayer() {
 }
 
 export async function prevRemotePlayer() {
-  const response = await fetch("http://localhost:4000/api/prev-remote-player");
+  const response = await fetch(`${API_BASE_URL}/api/prev-remote-player`);
   if (!response.ok) {
     toastError("Network response was not ok.");
   } else {
@@ -65,7 +67,7 @@ export async function prevRemotePlayer() {
 export async function playItemRemotePlayer(
   songIndex: number
 ) {
-  const response = await fetch("http://localhost:4000/api/play-item-remote-player", {
+  const response = await fetch(`${API_BASE_URL}/api/play-item-remote-player`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -84,7 +86,7 @@ export async function playItemRemotePlayer(
 export async function selectItemRemotePlayer(
   songIndex: number
 ) {
-  const response = await fetch("http://localhost:4000/api/select-item-remote-player", {
+  const response = await fetch(`${API_BASE_URL}/api/select-item-remote-player`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -105,7 +107,7 @@ export async function selectItemRemotePlayer(
 //=========================================================================================
 
 export async function checkRemoteFileExists(filePath: string) {
-  const response = await fetch("http://localhost:4000/api/file-exists", {
+  const response = await fetch(`${API_BASE_URL}/api/file-exists`, {
     // No more query string
     method: "POST",
     headers: {
@@ -128,7 +130,7 @@ export async function createRemotePlaylist(
   songs: string[]
 ) {
   try {
-    const response = await fetch("http://localhost:4000/api/create-playlist", {
+    const response = await fetch(`${API_BASE_URL}/api/create-playlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -151,7 +153,7 @@ export async function createRemotePlaylist(
 
 export async function getRemoteSongsFromPlaylist(playlistName: string) {
   const response = await fetch(
-    "http://localhost:4000/api/get-songs-from-playlist",
+    `${API_BASE_URL}/api/get-songs-from-playlist`,
     {
       method: "POST", // Change to POST to match your backend
       headers: {
@@ -173,7 +175,7 @@ export async function addRemoteSongToPlaylist(
   playlistName: string,
   songPath: string
 ) {
-  const response = await fetch("http://localhost:4000/api/add-songs-to-playlist", {
+  const response = await fetch(`${API_BASE_URL}/api/add-songs-to-playlist`, {
     method: "POST", // Change to POST to match your backend
     headers: {
       "Content-Type": "application/json",
@@ -191,7 +193,7 @@ export async function deleteRemoteSongFromPlaylistByIndex(
   songIndex: number
 ) {
   const response = await fetch(
-    "http://localhost:4000/api/delete-song-from-playlist-by-index",
+    `${API_BASE_URL}/api/delete-song-from-playlist-by-index`,
     {
       method: "POST", // Change to POST to match your backend
       headers: {
@@ -207,7 +209,7 @@ export async function deleteRemoteSongFromPlaylistByIndex(
 }
 
 export async function getRemoteAllPlaylists(): Promise<IPlaylist[]> {
-  const response = await fetch("http://localhost:4000/api/get-all-playlists");
+  const response = await fetch(`${API_BASE_URL}/api/get-all-playlists`);
 
   if (!response.ok) {
     toastError("Failed to fetch all playlists.");
@@ -218,7 +220,7 @@ export async function getRemoteAllPlaylists(): Promise<IPlaylist[]> {
 }
 
 export async function getRemoteFileDirectory(): Promise<IDirectoryItem> {
-  const response = await fetch("http://localhost:4000/api/get-file-directory");
+  const response = await fetch(`${API_BASE_URL}/api/get-file-directory`);
 
   if (!response.ok) {
     toastError("Failed to fetch file directory.");
@@ -230,7 +232,7 @@ export async function getRemoteFileDirectory(): Promise<IDirectoryItem> {
 
 export async function deleteRemotePlaylist(playlistName: string) {
   try {
-    const response = await fetch("http://localhost:4000/api/delete-playlist", {
+    const response = await fetch(`${API_BASE_URL}/api/delete-playlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -252,7 +254,7 @@ export async function deleteRemotePlaylist(playlistName: string) {
 
 export async function updateRemotePlaylist(playlistName: string, songs: string[]) {
   try {
-    const response = await fetch("http://localhost:4000/api/update-playlist", {
+    const response = await fetch(`${API_BASE_URL}/api/update-playlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -274,7 +276,7 @@ export async function updateRemotePlaylist(playlistName: string, songs: string[]
 
 export async function renameRemotePlaylist(oldPlaylistName: string, newPlaylistName: string) {
   try {
-    const response = await fetch("http://localhost:4000/api/rename-playlist", {
+    const response = await fetch(`${API_BASE_URL}/api/rename-playlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -298,7 +300,7 @@ export async function loadPlaylistRemotePlayer(playlistPath: string, playIndex: 
   try {
     console.log("Loading playlist on remote player:", playlistPath, playIndex);
 
-    const response = await fetch("http://localhost:4000/api/load-playlist-remote-player", {
+    const response = await fetch(`${API_BASE_URL}/api/load-playlist-remote-player`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

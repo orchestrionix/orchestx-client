@@ -22,7 +22,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Create WebSocket connection
-    const ws = new WebSocket('ws://localhost:4000');
+    const ws = new WebSocket(`ws://${window.location.hostname}:4000`);
 
     ws.onopen = () => {
       console.log('WebSocket Connected');

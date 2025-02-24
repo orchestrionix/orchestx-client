@@ -5,11 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { IPlaylist } from "../../types";
 import { createRemotePlaylist, getRemoteAllPlaylists } from "../../actions";
 import PlaylistItem from "./components/PlaylistItem";
-import DetailForm2O, { DetailSchema2O } from "../../components/detailForm2O";
 import { DEFAULT_TOAST_CONFIG, DEFAULT_TOAST_CREATE, toastError, toastSuccess } from "../../utils/toasts";
 import { toast } from "react-toastify";
 import { ModalV2 } from "../../components/tailwind/modalV2";
-import { Slideover } from "../../components/tailwind/slideover";
 import { Modal } from "../../components/tailwind/modal";
 import Breadcrumb from "../../components/tailwind/breadcrumbs";
 import Button from "../../components/tailwind/button";
@@ -18,6 +16,8 @@ import Button from "../../components/tailwind/button";
 const Library: React.FC = () => {
   const [listsLoading, setListsLoading] = useState(true);
   const [playlists, setPlaylists] = useState<IPlaylist[]>([]);
+  const [openPlaylistDetail, setOpenPlaylistDetail] = useState(false);
+  const [playlistName, setPlaylistName] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,25 +33,10 @@ const Library: React.FC = () => {
   // ==============================================================
   // ==============================================================
 
-  const [openPlaylistDetail, setOpenPlaylistDetail] =
-  useState(false);
+  const handleCreatePlaylist = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const [selectedPlaylist, setSelectedPlaylist] = useState<
-    {
-      name: string;
-    } | undefined
-  >();
-
-  const [selectedPlaylistTab, setSelectedPlaylistTab] =
-    useState('Algemeen');
-
-  // ==============================================================
-  // ==============================================================
-
-  const handleCreateObject = async () => {
-    const playlistName = selectedPlaylist?.name;
-
-    if (playlistName) {
+    if (playlistName.trim()) {
       try {
         await toast.promise(
           new Promise(async (resolve, reject) => {
@@ -67,77 +52,12 @@ const Library: React.FC = () => {
         
         toastSuccess(DEFAULT_TOAST_CREATE);
         setOpenPlaylistDetail(false);
-
+        setPlaylistName('');
         navigate(`/library/${encodeURIComponent(playlistName)}`);
       } catch (error: any) {
         toastError(error.message as string);
       }
     }
-  };
-
-  // ==============================================================
-  // ==============================================================
-
-  const detailSchema: DetailSchema2O = {
-    identifier: "products",
-    object: selectedPlaylist,
-    selectedTab: selectedPlaylistTab,
-    setSelectedTab: setSelectedPlaylistTab,
-    tabs: [
-      {
-        buttons: [
-          {
-            text: "Opslaan",
-            validate: true,
-            callback: handleCreateObject,
-            hideCallback: (object?: any): boolean => {
-              return false;
-            },
-            disableCallback: (object?: any): boolean => {
-              return false;
-            },
-          },
-        ],
-        title: "Algemeen",
-        sections: [
-          {
-            title: "Product gegevens",
-            description: "",
-            width: 100,
-            fields: [
-              {
-                grid: "sm:col-span-2",
-                label: "Naam",
-                name: "name",
-                required: true,
-                value: selectedPlaylist?.name,
-                type: "text",
-                callback: (name: string, value: string) => {
-                  setSelectedPlaylist((prevState: any) => ({
-                    ...prevState,
-                    [name]: value,
-                  }));
-                  return value;
-                },
-                validateCallback: (
-                  lable: string,
-                  value?: string
-                ): { valid: boolean; message?: string } => {
-                  if (!value) {
-                    return {
-                      valid: false,
-                      message: `moet worden ingevuld`,
-                    };
-                  }
-
-                  return { valid: true };
-                },
-              },
-            ],
-          },
-        ],
-      },
-    ],
   };
 
   // ==============================================================
@@ -169,7 +89,6 @@ const Library: React.FC = () => {
               primary
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedPlaylist({name: ""});
                 setOpenPlaylistDetail(true);
               }}
             >
@@ -222,15 +141,38 @@ const Library: React.FC = () => {
       </section>
 
       <Modal open={openPlaylistDetail} setOpen={setOpenPlaylistDetail}>
-        
-          <DetailForm2O
-            schema={detailSchema}
-            title={"Producten"}
-            caption={
-              "Product toevoegen"
-            }
-          />
-       
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-md font-medium text-white">Create Playlist</h3>
+          </div>
+          <form onSubmit={handleCreatePlaylist}>
+            <input
+              type="text"
+              id="playlistName"
+              value={playlistName}
+              onChange={(e) => setPlaylistName(e.target.value)}
+              className="w-full px-2 py-1 text-xs bg-black/20 border border-white/5 rounded text-white placeholder-white/40 focus:outline-none focus:border-gold/50"
+              placeholder="Playlist name"
+              required
+              autoFocus
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                secondary
+                onClick={() => {
+                  setOpenPlaylistDetail(false);
+                  setPlaylistName('');
+                }}
+                className="text-xs px-2 py-1"
+              >
+                Cancel
+              </Button>
+              <Button primary type="submit" className="text-xs px-2 py-1">
+                Create
+              </Button>
+            </div>
+          </form>
+        </div>
       </Modal>
     </div>
   );

@@ -201,12 +201,12 @@ export const DetailForm2O: React.FC<{
 
   return (
     <main onPointerUp={handlePointerUp}>
-      <header className="border-b border-gray-200 dark:border-white/5 relative">
+      <header className="border-b border-white/5">
         <div className="flex justify-between items-center px-4 sm:px-6 lg:px-8">
           <nav className="flex overflow-x-auto py-4">
             <ul
               role="list"
-              className="flex min-w-full flex-none gap-x-6 px-4 text-sm font-semibold leading-6 text-gray-500 sm:px-6 lg:px-8"
+              className="flex min-w-full flex-none gap-x-6 px-4 text-sm font-semibold leading-6 text-white/60"
             >
               {schema.tabs.map(
                 (tab, number) =>
@@ -215,9 +215,9 @@ export const DetailForm2O: React.FC<{
                       key={`${tab.title}_tab_${number}`}
                       className={classNames(
                         tab.title === schema.selectedTab
-                          ? "text-primary-400"
-                          : "",
-                        "cursor-pointer"
+                          ? "text-gold"
+                          : "hover:text-white/80",
+                        "cursor-pointer transition-colors"
                       )}
                       onClick={() => schema.setSelectedTab(tab.title)}
                     >
@@ -232,13 +232,13 @@ export const DetailForm2O: React.FC<{
             <button
               type="button"
               onClick={() => setShowDeveloperView(!showDeveloperView)}
-              className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-1"
+              className="text-xs px-2 py-1 rounded bg-white/5 text-white/60 hover:bg-white/10 transition-colors flex items-center gap-1"
             >
               <BeakerIcon className="h-3.5 w-3.5" />
             </button>
             {schema.specialAction && (
               <XMarkIcon
-                className="w-6 h-6 text-gray-400 dark:text-white z-80 cursor-pointer"
+                className="w-6 h-6 text-white/60 hover:text-white z-80 cursor-pointer transition-colors"
                 onClick={schema.specialAction.action}
               />
             )}
@@ -249,35 +249,35 @@ export const DetailForm2O: React.FC<{
       {/* Developer View Modal */}
       {showDeveloperView &&
         createPortal(
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[100]">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-3xl w-full mx-4 max-h-[80vh] flex flex-col">
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100]">
+            <div className="bg-black/90 rounded-xl shadow-xl max-w-3xl w-full mx-4 max-h-[80vh] flex flex-col border border-white/10">
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <BeakerIcon className="h-5 w-5 text-gray-500" />
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Ontwikkelaar Weergave
+                  <BeakerIcon className="h-5 w-5 text-gold" />
+                  <h3 className="text-lg font-semibold text-white">
+                    Developer View
                   </h3>
                 </div>
                 <button
                   onClick={() => setShowDeveloperView(false)}
-                  className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="p-1 rounded-md hover:bg-white/5 text-white/60 hover:text-white transition-colors"
                 >
-                  <XMarkIcon className="h-5 w-5 text-gray-500" />
+                  <XMarkIcon className="h-5 w-5" />
                 </button>
               </div>
 
               {/* JSON Content */}
               <div className="flex-1 p-4 min-h-0 overflow-auto">
-                <pre className="text-sm font-mono text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                <pre className="text-sm font-mono text-white/80 whitespace-pre-wrap">
                   {JSON.stringify(schema.object, null, 2)}
                 </pre>
               </div>
 
               {/* Modal Footer */}
-              <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+              <div className="border-t border-white/10 p-4">
                 <Button primary onClick={() => setShowDeveloperView(false)}>
-                  Sluiten
+                  Close
                 </Button>
               </div>
             </div>
@@ -337,7 +337,7 @@ export const Tab2O: React.FC<{
   setModal: Dispatch<SetStateAction<DetailButton2O | undefined>>;
 }> = ({ identifier, tab, schema, isSubmit, setIsSubmit, setModal }) => {
   return (
-    <article className="divide-y divide-gray-200 dark:divide-white/5">
+    <article className="divide-y divide-white/5">
       {tab.sections.map(
         (section, index) =>
           (section.hideCallback ? section.hideCallback() : true) && (
@@ -351,51 +351,42 @@ export const Tab2O: React.FC<{
           )
       )}
 
-      <footer>
-        <div className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 md:py-8 sm:px-6 md:grid-cols-3 lg:px-8">
-          <div />
-
-          <form className="md:col-span-2">
-            <div className="grid grid-cols-1 gap-x-6 sm:max-w-full sm:grid-cols-6">
-              <div className="col-span-full">
-                <div className="flex items-center justify-end gap-x-6">
-                  {tab.buttons &&
-                    tab.buttons.map((button, index) => {
-                      const shouldRender =
-                        !button.hideCallback ||
-                        button.hideCallback(schema.object) === false;
-                      if (!shouldRender) return null;
-                      return (
-                        <Button
-                          key={`${identifier}_button_${button.text}_${index}`}
-                          primary
-                          onClick={() => {
-                            setIsSubmit(true);
-                            if (validateTab(tab) && button.callback) {
-                              if (!button.modal) {
-                                button.callback();
-                              } else {
-                                setModal(button);
-                              }
-                            }
-                          }}
-                        >
-                          {button.text}{" "}
-                          <span className="inline ml-1">
-                            <PlayIcon
-                              className="h-3 w-3 text-white"
-                              aria-hidden="true"
-                            />
-                          </span>
-                        </Button>
-                      );
-                    })}
-                </div>
-              </div>
-            </div>
-          </form>
+      {/* Footer without divider */}
+      <div className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="flex justify-end gap-x-6">
+          {tab.buttons &&
+            tab.buttons.map((button, index) => {
+              const shouldRender =
+                !button.hideCallback ||
+                button.hideCallback(schema.object) === false;
+              if (!shouldRender) return null;
+              return (
+                <Button
+                  key={`${identifier}_button_${button.text}_${index}`}
+                  primary
+                  onClick={() => {
+                    setIsSubmit(true);
+                    if (validateTab(tab) && button.callback) {
+                      if (!button.modal) {
+                        button.callback();
+                      } else {
+                        setModal(button);
+                      }
+                    }
+                  }}
+                >
+                  {button.text}
+                  <span className="inline ml-1">
+                    <PlayIcon
+                      className="h-3 w-3 text-white"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Button>
+              );
+            })}
         </div>
-      </footer>
+      </div>
     </article>
   );
 };
@@ -408,19 +399,12 @@ export const Section2O: React.FC<{
 }> = ({ identifier, section, isSubmit, schema }) => {
   return section.hideTitle === true ? (
     <section>
-      <div
-        className={classNames(
-          "grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 sm:px-6 lg:px-8 ",
-          section.hideTitle ? "" : "py-12"
-        )}
-      >
+      <div className={classNames(
+        "grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 sm:px-6 lg:px-8",
+        section.hideTitle ? "" : "py-12"
+      )}>
         <form className="md:col-span-2">
-          <div
-            className={classNames(
-              "grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-full sm:grid-cols-6 ",
-              section.hideTitle ? "" : ""
-            )}
-          >
+          <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-full sm:grid-cols-6">
             {section.fields.map((field, index) => (
               <Field2O
                 key={`${identifier}_field_${index}`}
@@ -438,10 +422,10 @@ export const Section2O: React.FC<{
     <section>
       <div className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
         <header>
-          <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+          <h2 className="text-base font-semibold leading-7 text-white">
             {section.title}
           </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-500">
+          <p className="mt-1 text-sm leading-6 text-white/60">
             {section.description}
           </p>
         </header>
@@ -483,32 +467,23 @@ export const Field2O: React.FC<{
     <>
       {((field.hideCallback && field.hideCallback()) ||
         !field.hideCallback) && (
-        <div
-          className={classNames(
-            field.grid,
-            field.type !== "queryBuilder" &&
-              field.type !== "actionBuilder" &&
-              field.type !== "texture"
-              ? ""
-              : ""
-          )}
-        >
+        <div className={field.grid}>
           <label
             htmlFor={identifier}
             className={classNames(
+              "block text-sm font-medium mb-2",
               isSubmit &&
-                field.validateCallback &&
-                !field.validateCallback(
-                  field?.label ? field?.label : "",
-                  field.value
-                ).valid
-                ? "text-red"
-                : "text-gray-900 dark:text-white",
-              "block text-sm font-medium leading-6"
+              field.validateCallback &&
+              !field.validateCallback(
+                field?.label ? field?.label : "",
+                field.value
+              ).valid
+                ? "text-red-500"
+                : "text-white/80"
             )}
           >
             {field.label && field.label.length > 0 ? field.label : ""}
-            {field.required && <span>*</span>}{" "}
+            {field.required && <span className="text-gold ml-1">*</span>}
             {isSubmit &&
               field.validateCallback &&
               !field.validateCallback(
@@ -516,7 +491,7 @@ export const Field2O: React.FC<{
                 field.value
               ).valid &&
               isTimeOut && (
-                <span>{`(${
+                <span className="text-red-500 ml-2">{`(${
                   field.validateCallback(
                     field?.label ? field?.label : "",
                     field.value
@@ -524,7 +499,7 @@ export const Field2O: React.FC<{
                 })`}</span>
               )}
           </label>
-          <div className="mt-2">
+          <div>
             {(field.type === "text" ||
               field.type === "number" ||
               field.type === "email" ||
@@ -543,7 +518,10 @@ export const Field2O: React.FC<{
                 onChange={(e: any) =>
                   field.callback && field.callback(field.name, e.target.value)
                 }
-                className={field.className}
+                className={classNames(
+                  "bg-white/5 text-white placeholder-white/40 border-0 ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-gold",
+                  field.className || ""
+                )}
                 disabled={
                   field.disableCallback ? field.disableCallback() : false
                 }
@@ -553,36 +531,25 @@ export const Field2O: React.FC<{
             {field?.type === "url" && field.url && (
               <div
                 className={classNames(
-                  "flex rounded-md border-0 dark:bg-white/5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6",
+                  "flex rounded-md bg-white/5 text-white border-0 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-gold",
                   (field.disableCallback ? field.disableCallback() : false)
-                    ? "bg-grey-100 text-grey-500"
+                    ? "opacity-50"
                     : "",
                   field.className || ""
                 )}
               >
-                <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm font-light lowercase">
+                <span className="flex select-none items-center pl-3 text-white/40 sm:text-sm">
                   {field.url.url}
                 </span>
                 <input
                   id={identifier}
                   type="text"
                   name={field.name}
-                  autoComplete={field.name}
                   value={field.value}
-                  className={classNames(
-                    "block flex-1 border-0 bg-transparent py-1.5 pl-1  placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6",
-                    field.className ? field.className : "",
-                    (field.disableCallback ? field.disableCallback() : false)
-                      ? "bg-grey-100 text-gray-500"
-                      : "text-gray-900 dark:text-white"
-                  )}
+                  className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-white placeholder:text-white/40 focus:ring-0 sm:text-sm sm:leading-6"
                   placeholder={field.placeholder}
-                  onChange={(e) =>
-                    field.callback && field.callback(field.name, e.target.value)
-                  }
-                  disabled={
-                    field.disableCallback ? field.disableCallback() : false
-                  }
+                  onChange={(e) => field.callback && field.callback(field.name, e.target.value)}
+                  disabled={field.disableCallback ? field.disableCallback() : false}
                 />
               </div>
             )}
@@ -724,7 +691,7 @@ export const Field2O: React.FC<{
             )}
             </div>
           {field.caption && (
-            <p className="ml-0.5 mt-1 text-xs font-light leading-6 text-grey-500">
+            <p className="mt-2 text-sm text-white/40">
               {field.caption}
             </p>
           )}
@@ -743,21 +710,21 @@ export const DeleteForm2O: React.FC<{
   return (
     <div className="self-center px-8">
       <div className="sm:flex sm:items-start mb-6">
-        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
           <ExclamationTriangleIcon
-            className="h-6 w-6 text-cego-red"
+            className="h-6 w-6 text-red-500"
             aria-hidden="true"
           />
         </div>
         <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
           <Dialog.Title
             as="h3"
-            className="text-lg font-semibold leading-6 mb-4 dark:text-white text-gray-900"
+            className="text-lg font-semibold leading-6 mb-4 text-white"
           >
             {title}
           </Dialog.Title>
           <div className="mt-2">
-            <p className="text-base dark:text-white text-gray-900">{text}</p>
+            <p className="text-base text-white/80">{text}</p>
           </div>
         </div>
       </div>
@@ -765,22 +732,20 @@ export const DeleteForm2O: React.FC<{
       <div className="flex justify-end space-x-2">
         <Button
           tertiary
-          onClick={() => {
-            close();
-          }}
+          onClick={close}
+          className="text-white/60 hover:text-white"
         >
-          {"Annuleren"}{" "}
+          Cancel
         </Button>
 
         <Button
           secondary
-          onClick={() => {
-            handleDelete();
-          }}
+          onClick={handleDelete}
+          className="bg-red-500 hover:bg-red-600 text-white"
         >
-          {"Verwijderen"}{" "}
+          Delete
           <span className="inline ml-1">
-            <TrashIcon className="h-3 w-3 text-cego-white" aria-hidden="true" />
+            <TrashIcon className="h-3 w-3" aria-hidden="true" />
           </span>
         </Button>
       </div>

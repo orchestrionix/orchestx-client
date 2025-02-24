@@ -28,6 +28,8 @@ import {
 } from "@dnd-kit/sortable";
 import SortableSongItem from "./components/SortableSongItem";
 import Breadcrumb from "../../../components/tailwind/breadcrumbs";
+import { Button } from "../../../components/tailwind/button";
+import { Modal } from "../../../components/tailwind/modal";
 
 
 const PlaylistDetail: React.FC = () => {
@@ -186,6 +188,7 @@ const PlaylistDetail: React.FC = () => {
       {/* Add header with breadcrumbs */}
       <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex items-center gap-4">
+        
           <Breadcrumb 
             home={{ href: "/", name: "home" }} 
             items={[
@@ -199,7 +202,7 @@ const PlaylistDetail: React.FC = () => {
                 href: `/library/${encodeURIComponent(playlist?.playlistName || "")}`,
                 current: true
               }
-            ]} 
+            ]}
           />
         </div>
       </header>
@@ -319,29 +322,32 @@ const PlaylistDetail: React.FC = () => {
         </DndContext>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <MenuModal open={showDeleteConfirm} setOpen={setShowDeleteConfirm}>
-        <div className="p-6 text-white">
-          <h3 className="text-xl font-bold mb-4">Delete Playlist</h3>
-          <p className="mb-6">
-            Are you sure you want to delete "{playlist.playlistName}"? This action cannot be undone.
+      <Modal open={showDeleteConfirm} setOpen={setShowDeleteConfirm}>
+        <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
+            <h3 className="text-md font-medium text-white">Delete Playlist</h3>
+          </div>
+          <p className="text-sm text-white/60 mb-4">
+            Are you sure you want to delete "{playlist.playlistName}"?
           </p>
-          <div className="flex justify-end gap-4">
-            <button
-              className="px-4 py-2 text-white/60 hover:text-white"
+          <div className="flex justify-end gap-2">
+            <Button
+              secondary
               onClick={() => setShowDeleteConfirm(false)}
+              className="text-xs px-2 py-1"
             >
               Cancel
-            </button>
-            <button
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded"
+            </Button>
+            <Button
+              primary
               onClick={handleDelete}
+              className="text-xs px-2 py-1 !bg-red-500 hover:!bg-red-600"
             >
               Delete
-            </button>
+            </Button>
           </div>
         </div>
-      </MenuModal>
+      </Modal>
     </div>
   );
 };
