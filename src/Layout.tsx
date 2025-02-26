@@ -30,7 +30,7 @@ const teams = [
     icon: AdjustmentsVerticalOutline,
     current: false,
   },
-  { id: 3, name: "Profile", href: "/profile", icon: UserOutline, current: false },
+  
 ];
 
 const Layout = () => {

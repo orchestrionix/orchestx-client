@@ -1,6 +1,13 @@
 import { IActivePlaylistItem, IDirectoryItem, IPlaylist, PlaylistType } from "./types";
 import { toastError } from "./utils/toasts";
 
+export interface Settings {
+  NAME: string;
+  PLAYER_DIRECTORY: string;
+  MUSIC_DIRECTORY: string;
+  PLAYER_PLAYLIST_DIRECTORY: string;
+}
+
 export const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:4000`;
 
 export async function getRemotePlayerState() {
@@ -311,6 +318,102 @@ export async function loadPlaylistRemotePlayer(playlistPath: string, playIndex: 
     if (!response.ok) {
       throw new Error("Failed to load playlist on remote player.");
     }
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}
+
+export async function getRemoteSettings(): Promise<Settings> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings`);
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to fetch settings.");
+    }
+    
+    return data;
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}
+
+export async function updateRemoteSetting(key: keyof Settings, value: string): Promise<{
+  message: string;
+  settings: Settings;
+}> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings/${key}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ value }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Failed to update setting: ${key}`);
+    }
+
+    return data;
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}
+
+export async function updateRemoteSettings(settings: Partial<Settings>): Promise<{
+  message: string;
+  settings: Settings;
+}> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/settings`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(settings),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to update settings');
+    }
+
+    return data;
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}
+
+//=========================================================================================
+//=========================================================================================
+//=========================================================================================
+
+export async function updateVolume(volume: number) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/update-volume`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ volume }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update volume.");
+    }
+
+    return data;
   } catch (error: any) {
     toastError(error.message);
     throw error;

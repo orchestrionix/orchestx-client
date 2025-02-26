@@ -10,6 +10,8 @@ import Search from './pages/search';
 import Home from './pages/home';
 import PlaylistDetail from './pages/library/name';
 import { ModalProvider } from './contexts/ModalContext';
+import Settings from './pages/settings';
+import Volume from './pages/volume';
 
 const App: React.FC = () => {
   return (
@@ -23,6 +25,8 @@ const App: React.FC = () => {
               <Route path="search" element={<Search />} />
               <Route path="library" element={<Library />} />
               <Route path="library/:name" element={<PlaylistDetail />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="volume" element={<Volume />} />
             </Route>
           </Routes>
         </Router>
