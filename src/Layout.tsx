@@ -5,36 +5,60 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { AdjustmentsVerticalOutline, Cog8ToothOutline, HomeModernOutline, ListBulletOutline, MagnifyingGlassOutline, UserOutline } from './components/icons';
 import { classNames } from './utils';
 import PlayerControle from './components/player';
 
-const navigation = [
-  { name: "Home", href: "/", icon: HomeModernOutline, current: true },
-  { name: "Search", href: "search", icon: MagnifyingGlassOutline, current: false },
-  { name: "Library", href: "library", icon: ListBulletOutline, current: false },
+// Define types for navigation items
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
+
+interface TeamItem extends NavigationItem {
+  id: number;
+}
+
+const navigation: NavigationItem[] = [
+  { name: "Home", href: "/", icon: HomeModernOutline },
+  { name: "Search", href: "search", icon: MagnifyingGlassOutline },
+  { name: "Library", href: "library", icon: ListBulletOutline },
 ];
-const teams = [
+
+const teams: TeamItem[] = [
   {
     id: 1,
     name: "Settings",
     href: "/settings",
     icon: Cog8ToothOutline,
-    current: false,
   },
   {
     id: 2,
     name: "Volume",
     href: "/volume",
     icon: AdjustmentsVerticalOutline,
-    current: false,
   },
-  
 ];
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  
+  // Function to check if a navigation item is currently active
+  const isActive = (path: string): boolean => {
+    // Remove leading slash if present for consistent comparison
+    const normalizedPath = path.startsWith('/') ? path.substring(1) : path;
+    
+    if (normalizedPath === '') {
+      // Special case for home route
+      return location.pathname === '/';
+    }
+    
+    // Use exact path matching for proper highlighting
+    return location.pathname === '/' + normalizedPath;
+  };
 
   return (
     <>
@@ -117,7 +141,7 @@ const Layout = () => {
                                 <Link 
                                   to={item.href}
                                   className={classNames(
-                                    item.current
+                                    isActive(item.href)
                                       ? "bg-gold text-white"
                                       : "text-white hover:text-white hover:bg-gold",
                                     "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
@@ -125,7 +149,7 @@ const Layout = () => {
                                 >
                                   <item.icon
                                     className={classNames(
-                                      item.current
+                                      isActive(item.href)
                                         ? "text-white"
                                         : "text-white group-hover:text-white",
                                       "h-6 w-6 shrink-0"
@@ -148,17 +172,17 @@ const Layout = () => {
                                 <Link 
                                   to={team.href}
                                   className={classNames(
-                                    team.current
+                                    isActive(team.href)
                                       ? "bg-gold text-white"
-                                      : "text-white hover:text-white hover:bg-gold",
+                                      : "text-white  hover:text-gold hover:bg-black",
                                     "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                   )}
                                 >
                                   <team.icon
                                     className={classNames(
-                                      team.current
+                                      isActive(team.href)
                                         ? "text-white"
-                                        : "text-white group-hover:text-white",
+                                        : "text-white group-hover:text-gold",
                                       "h-6 w-6 shrink-0"
                                     )}
                                     aria-hidden="true"
@@ -198,7 +222,7 @@ const Layout = () => {
                         <Link 
                           to={item.href}
                           className={classNames(
-                            item.current
+                            isActive(item.href)
                               ? "bg-gold text-white"
                               : "text-white hover:text-gold hover:bg-black",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
@@ -206,7 +230,7 @@ const Layout = () => {
                         >
                           <item.icon
                             className={classNames(
-                              item.current
+                              isActive(item.href)
                                 ? "text-white"
                                 : "text-white group-hover:text-gold",
                               "h-6 w-6 shrink-0"
@@ -229,16 +253,16 @@ const Layout = () => {
                         <Link 
                           to={team.href}
                           className={classNames(
-                            team.current
-                              ? "bg-black text-gold"
+                            isActive(team.href)
+                              ? "bg-gold text-white"
                               : "text-white  hover:text-gold hover:bg-black",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
                           <team.icon
                             className={classNames(
-                              team.current
-                                ? "text-gold"
+                              isActive(team.href)
+                                ? "text-white"
                                 : "text-white group-hover:text-gold",
                               "h-6 w-6 shrink-0"
                             )}
