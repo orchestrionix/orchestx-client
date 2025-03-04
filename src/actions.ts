@@ -419,3 +419,49 @@ export async function updateVolume(volume: number) {
     throw error;
   }
 }
+
+export async function setVolumeRemotePlayer(volume: number) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/set-volume-remote-player`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ volume }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to set volume on remote player.");
+    }
+
+    return data;
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}
+
+export async function setViewModeRemotePlayer(viewMode: number) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/set-view-mode-remote-player`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ viewMode }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to set view mode on remote player.");
+    }
+
+    return data;
+  } catch (error: any) {
+    toastError(error.message);
+    throw error;
+  }
+}

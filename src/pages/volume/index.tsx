@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { PlayerContext } from '../../playerProvider';
-import { updateVolume } from '../../actions';
+import { updateVolume, setVolumeRemotePlayer } from '../../actions';
 import debounce from 'lodash/debounce';
 import { FiVolume1, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import Breadcrumb from '../../components/tailwind/breadcrumbs';
@@ -9,6 +9,8 @@ const Volume: React.FC = () => {
   const context = useContext(PlayerContext);
   const [localVolume, setLocalVolume] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const [lastSentVolume, setLastSentVolume] = useState<number | null>(null);
 
   // Convert player volume (0-65535) to percentage (0-100)
   const volumeToPercentage = (vol: number) => Math.round((vol / 65535) * 100);
@@ -16,25 +18,53 @@ const Volume: React.FC = () => {
   // Convert percentage (0-100) to player volume (0-65535)
   const percentageToVolume = (percentage: number) => Math.round((percentage / 100) * 65535);
 
-  // Update local volume when player state changes (only if not dragging)
+  // Initialize local volume from player state
   useEffect(() => {
-    if (!isDragging && context?.playerState?.volume !== undefined) {
+    if (context?.playerState?.volume !== undefined && !isDragging && !isAdjusting) {
       setLocalVolume(volumeToPercentage(context.playerState.volume));
     }
-  }, [context?.playerState?.volume, isDragging]);
+  }, [context?.playerState?.volume, isDragging, isAdjusting]);
+
+  // Send volume updates to the server
+  const updateRemoteVolume = useCallback(async (volumeValue: number) => {
+    try {
+      setIsAdjusting(true);
+      const actualVolume = percentageToVolume(volumeValue);
+      setLastSentVolume(actualVolume);
+      await setVolumeRemotePlayer(actualVolume);
+    } catch (error) {
+      console.error('Failed to update volume:', error);
+    } finally {
+      // Add a small delay before allowing state updates again
+      setTimeout(() => {
+        setIsAdjusting(false);
+      }, 300);
+    }
+  }, []);
 
   // Debounced volume update function
   const debouncedUpdateVolume = useCallback(
     debounce((value: number) => {
-      updateVolume(percentageToVolume(value));
-    }, 100),
-    []
+      updateRemoteVolume(value);
+    }, 150),
+    [updateRemoteVolume]
   );
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseInt(event.target.value);
     setLocalVolume(newVolume);
     debouncedUpdateVolume(newVolume);
+  };
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+    setIsAdjusting(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    // Immediately send the final value when dragging ends
+    updateRemoteVolume(localVolume);
   };
 
   // Get volume icon based on level
@@ -78,12 +108,25 @@ const Volume: React.FC = () => {
             <div className="absolute md:w-full w-8 md:flex-row flex-col flex justify-between 
                           md:bottom-[-2rem] md:left-0 left-[-2rem] top-0
                           h-full md:h-auto">
+              {/* Desktop labels (0% to 100%) - hidden on mobile */}
               {[0, 25, 50, 75, 100].map((mark) => (
                 <div 
-                  key={mark}
-                  className="flex md:flex-col flex-row items-center justify-end h-0"
+                  key={`desktop-${mark}`}
+                  className="hidden md:flex md:flex-col items-center justify-end h-0"
                 >
-                  <span className="md:mt-2 mr-2 md:mr-0 text-xs text-white/40 w-8 text-right md:text-center">
+                  <span className="mt-2 text-xs text-white/40 w-8 text-center">
+                    {mark}%
+                  </span>
+                </div>
+              ))}
+              
+              {/* Mobile labels (100% to 0%) - hidden on desktop */}
+              {[100, 75, 50, 25, 0].map((mark) => (
+                <div 
+                  key={`mobile-${mark}`}
+                  className="flex md:hidden flex-row items-center justify-end h-0"
+                >
+                  <span className="mr-2 text-xs text-white/40 w-8 text-right">
                     {mark}%
                   </span>
                 </div>
@@ -115,10 +158,10 @@ const Volume: React.FC = () => {
                 max="100"
                 value={localVolume}
                 onChange={handleVolumeChange}
-                onMouseDown={() => setIsDragging(true)}
-                onMouseUp={() => setIsDragging(false)}
-                onTouchStart={() => setIsDragging(true)}
-                onTouchEnd={() => setIsDragging(false)}
+                onMouseDown={handleDragStart}
+                onMouseUp={handleDragEnd}
+                onTouchStart={handleDragStart}
+                onTouchEnd={handleDragEnd}
                 className="absolute md:w-full w-2 md:h-2 h-full 
                          appearance-none bg-transparent cursor-pointer
                          md:rotate-0 
