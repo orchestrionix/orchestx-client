@@ -12,6 +12,7 @@ import PlaylistDetail from './pages/library/name';
 import { ModalProvider } from './contexts/ModalContext';
 import Settings from './pages/settings';
 import Volume from './pages/volume';
+import Views from './pages/views';
 
 const App: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ const App: React.FC = () => {
               <Route path="library/:name" element={<PlaylistDetail />} />
               <Route path="settings" element={<Settings />} />
               <Route path="volume" element={<Volume />} />
+              <Route path="views" element={<Views />} />
             </Route>
           </Routes>
         </Router>

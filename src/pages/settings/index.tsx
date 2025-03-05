@@ -143,10 +143,10 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <header className="flex flex-col gap-3 border-b border-gray-800/5 dark:border-white/5 px-4 py-3 sm:px-6 lg:px-8">
+    <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold text-white">Settings</h1>
+          <div className="flex flex-col gap-4">
+            <h1 className="text-4xl font-bold text-white mb-4">Settings</h1>
             <Breadcrumb 
               home={{ href: "/", name: "home" }} 
               items={[{ name: "Settings", href: "/settings", current: true }]} 

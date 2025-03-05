@@ -3,6 +3,7 @@ import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
+  ComputerDesktopIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Outlet, Link, useLocation } from 'react-router-dom';
@@ -33,6 +34,12 @@ const teams: TeamItem[] = [
     name: "Settings",
     href: "/settings",
     icon: Cog8ToothOutline,
+  },
+  {
+    id: 3,
+    name: "Views",
+    href: "/views",
+    icon: ComputerDesktopIcon,
   },
   {
     id: 2,

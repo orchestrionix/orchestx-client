@@ -7,6 +7,7 @@ export type PlayerStateType = {
     length: number;
     position: number;
     volume: number;
+    viewMode: number;
 };
 
 export type PlaylistType = string[];
