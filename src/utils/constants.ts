@@ -6,13 +6,7 @@ export const APP_ENVIRONMENT = 'DEVELOPMENT'
 
 export const STATUS_PLAYING = 'playing';
 
-// export const PLAYER_DIRECTORY = 'C:\\Decap\\DecapPlayer';
-// export const MUSIC_DIRECTORY = 'C:\\Decap\\MusicFiles';
-// export const PLAYER_PLAYLIST_DIRECTORY = 'Playlists';
-
-export const PLAYER_DIRECTORY = 'C:\\Decap\\DecapPlayer_V02';
-export const MUSIC_DIRECTORY = 'C:\\Decap\\Music';
-export const PLAYER_PLAYLIST_DIRECTORY = 'C:\\Decap\\Playlists';
-
 export const DEFAULT_ERROR_MESSAGE = "Something went wrong"
+
+export const RHYTHMS = ['Bayon', 'Bolero', 'Boogie', 'Fox', 'Mars', 'Mazurka', 'Polka', 'Rumba', 'Step', 'Tango', 'Wals'];
 

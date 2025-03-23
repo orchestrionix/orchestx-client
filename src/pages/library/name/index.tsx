@@ -3,13 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import BeatLoader from "react-spinners/BeatLoader";
 import { FiMusic, FiEdit2, FiTrash2, FiPlay, FiPause } from "react-icons/fi";
 import { IPlaylist } from "../../../types";
-import { 
-  deleteRemotePlaylist, 
-  deleteRemoteSongFromPlaylistByIndex, 
+import {
+  deleteRemotePlaylist,
+  deleteRemoteSongFromPlaylistByIndex,
   getRemoteAllPlaylists,
   loadPlaylistRemotePlayer,
   renameRemotePlaylist,
-  updateRemotePlaylist 
+  updateRemotePlaylist
 } from "../../../actions";
 import { toastError, toastSuccess } from "../../../utils/toasts";
 import { MenuModal } from "../../../components/player/menuModal";
@@ -121,7 +121,7 @@ const PlaylistDetail: React.FC = () => {
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (!over || !playlist) return;
 
     if (active.id !== over.id) {
@@ -174,7 +174,9 @@ const PlaylistDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="grid place-items-center h-4/5">
-        <BeatLoader color="#CCA483" size={25} />
+        <div className="mx-auto inline">
+          <BeatLoader color="#CCA483" size={25} />
+        </div>
       </div>
     );
   }
@@ -188,9 +190,9 @@ const PlaylistDetail: React.FC = () => {
       {/* Add header with breadcrumbs */}
       <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex items-center gap-4">
-        
-          <Breadcrumb 
-            home={{ href: "/", name: "home" }} 
+
+          <Breadcrumb
+            home={{ href: "/", name: "home" }}
             items={[
               {
                 name: "Library",
@@ -324,7 +326,7 @@ const PlaylistDetail: React.FC = () => {
 
       <Modal open={showDeleteConfirm} setOpen={setShowDeleteConfirm}>
         <div className="p-4">
-        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-md font-medium text-white">Delete Playlist</h3>
           </div>
           <p className="text-sm text-white/60 mb-4">

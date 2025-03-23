@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 export type PlayerStateType = {
-    status: "ready" | "playing" | "paused" | "unknown" ;
+    status: "ready" | "playing" | "paused" | "unknown" | "error";
     title: string;
     itemId: number;
     length: number;

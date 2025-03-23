@@ -136,7 +136,9 @@ const SettingsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="grid place-items-center h-4/5">
-        <BeatLoader color="#CCA483" size={25} />
+        <div className="mx-auto inline">
+          <BeatLoader color="#CCA483" size={25} />
+        </div>
       </div>
     );
   }

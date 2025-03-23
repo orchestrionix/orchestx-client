@@ -12,10 +12,10 @@ import { setViewModeRemotePlayer } from "../../actions";
 
 const viewOptions = [
   { id: 1, name: "Playlist View", description: "Standard playlist display" },
-  { id: 2, name: "Book View", description: "Ponskaart views, like a midi piano roll view" },
-  { id: 3, name: "Animation View", description: "Animations of instruments" },
-  { id: 4, name: "Karaoke View", description: "Display lyrics for songs" },
-  { id: 5, name: "Slide Show", description: "Display slides for presentations" },
+  { id: 4, name: "Book View", description: "Ponskaart views, like a midi piano roll view" },
+  { id: 5, name: "Animation View", description: "Animations of instruments" },
+  { id: 3, name: "Karaoke View", description: "Display lyrics for songs" },
+  { id: 2, name: "Slide Show", description: "Display slides for presentations" },
 ];
 
 const ViewsPage: React.FC = () => {
@@ -56,68 +56,73 @@ const ViewsPage: React.FC = () => {
       </header>
 
       <div className="flex-1 px-4 py-8 sm:px-6 lg:px-8 overflow-auto">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-[1920px]">
           <h2 className="text-2xl font-semibold text-white mb-8">Select View Mode</h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-5 gap-6">
             {viewOptions.map((view) => (
               <div 
                 key={view.id}
-                className={`group relative cursor-pointer transition-all duration-300 ${
-                  activeView === view.id 
-                    ? 'scale-105 z-10' 
-                    : 'hover:scale-102'
-                }`}
+                className={`group relative cursor-pointer transition-all duration-300 rounded-lg
+                  ${activeView === view.id 
+                    ? 'bg-grey-800 ring-1 ring-gold' 
+                    : 'bg-grey-900/50 hover:bg-grey-800/80'
+                  }`}
                 onClick={() => !isChanging && handleViewChange(view.id)}
               >
-                {/* Fluent UI inspired card */}
-                <div className={`rounded-xl overflow-hidden ${
-                  activeView === view.id 
-                    ? 'shadow-lg shadow-gold/20 ring-1 ring-gold' 
-                    : 'shadow-md hover:shadow-lg hover:shadow-grey-700/30'
-                }`}>
-                  {/* Card content with acrylic effect */}
-                  <div className="relative backdrop-blur-sm bg-grey-900/80 border border-grey-700/50">
-                    {/* Image */}
-                    <div className="aspect-w-16 aspect-h-9">
+                {/* Card Container */}
+                <div className="relative aspect-[16/10] p-4 flex flex-col">
+                  {/* Icon/Image Container */}
+                  <div className="flex-1 flex items-center justify-center mb-4">
+                    <div className={`relative w-16 h-16 transition-transform duration-300
+                      ${activeView === view.id 
+                        ? 'scale-110' 
+                        : 'group-hover:scale-110'
+                      }`}
+                    >
                       <img
-                        src={`/images/views/${view.id}.png`}
-                        className="w-full h-full object-cover"
+                        src={`/images/views/_${view.id}.png`}
+                        className={`w-full h-full object-contain transition-opacity duration-300
+                          ${activeView === view.id 
+                            ? 'opacity-100' 
+                            : 'opacity-70 group-hover:opacity-100'
+                          }`}
                         alt={view.name}
                         onError={(e) => {
                           e.currentTarget.src = "/images/album_.jpg";
                         }}
                       />
-                      
-                      {/* Acrylic overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-grey-900/40 to-grey-900/80 backdrop-blur-[2px]"></div>
-                      
-                      {/* View number badge */}
-                      <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md text-gold text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border border-grey-700/50">
-                        {view.id}
-                      </div>
-                      
-                      {/* Loading indicator */}
-                      {isChanging && activeView === view.id && (
-                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-                          <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin"></div>
-                        </div>
-                      )}
                     </div>
-                    
-                    {/* Content area */}
-                    <div className="p-4 backdrop-blur-md bg-grey-900/70 border-t border-grey-700/30">
-                      <h3 className="text-white font-medium text-xsm capitalize">{view.name}</h3>
-                      
-                      {/* Active indicator */}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-gold text-xs font-medium">
+                        View {view.id}
+                      </div>
                       {activeView === view.id && (
-                        <div className="absolute top-3 right-3 flex items-center space-x-1">
-                          <div className="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
                           <span className="text-gold text-xs">Active</span>
                         </div>
                       )}
                     </div>
+                    
+                    <div>
+                      <h3 className="text-white text-sm font-medium mb-1">{view.name}</h3>
+                      <p className="text-grey-300 text-xs opacity-60 group-hover:opacity-100 transition-opacity line-clamp-2">
+                        {view.description}
+                      </p>
+                    </div>
                   </div>
+
+                  {/* Loading State */}
+                  {isChanging && activeView === view.id && (
+                    <div className="absolute inset-0 bg-grey-900/90 backdrop-blur-sm flex items-center justify-center rounded-lg">
+                      <div className="w-6 h-6 border-2 border-gold border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -129,3 +134,4 @@ const ViewsPage: React.FC = () => {
 };
 
 export default ViewsPage;
+

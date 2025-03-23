@@ -23,7 +23,8 @@ export async function getRemotePlayerState() {
 
 export async function getRemotePlayerActivePlaylist(): Promise<{
   playlist: string[];
-  playlistName: string;
+  order: string[];
+  file: string;
 }> {
   const response = await fetch(`${API_BASE_URL}/api/get-remote-player-active-playlist`);
 
@@ -35,7 +36,8 @@ export async function getRemotePlayerActivePlaylist(): Promise<{
   
   return {
     playlist: data.playlist,
-    playlistName: data.playlistName || "Unknown Playlist",
+    order: data.order,
+    file: data.file,
   };
 }
 

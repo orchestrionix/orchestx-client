@@ -4,8 +4,9 @@ import { FiMusic, FiPlay, FiPause, FiX } from "react-icons/fi";
 import { PlayerContext } from "../../playerProvider";
 import { IActivePlaylistItem } from "../../types";
 import { getRemotePlayerActivePlaylist, playItemRemotePlayer, selectItemRemotePlayer } from "../../actions";
-import { parsePlaylistString, parseSongDetailsPlaylist } from "../../utils";
+import { extractFileNameWithoutExtension, parsePlaylistString } from "../../utils";
 import Breadcrumb from "../../components/tailwind/breadcrumbs";
+import { toastError } from "../../utils/toasts";
 
 const Home: React.FC = () => {
   const context = useContext(PlayerContext);
@@ -17,20 +18,28 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const playlistData = await getRemotePlayerActivePlaylist();
-
-      if (playlistData.playlist) {
-        setPlaylist(parsePlaylistString(playlistData.playlist));
-        setPlaylistName(playlistData.playlistName);
+      try {
+        const playlistData = await getRemotePlayerActivePlaylist();
+  
+        const playlist = parsePlaylistString(playlistData.playlist);
+        const file = playlistData.file;
+  
+        if (playlistData.playlist) {
+          setPlaylist(playlist);
+          setPlaylistName(extractFileNameWithoutExtension(file));
+        }
+      } catch (error: any) {
+        toastError(error?.message ? error?.message : "Failed to fetch playlist data");
+      } finally {
+        setListLoading(false);
       }
-
-      setListLoading(false);
     }
-
+  
     fetchData();
-  }, [playerState?.itemId]);
+  }, [playerState?.itemId]);  
 
   const handlePlay = (index: number) => {
+    console.log(index);
     playItemRemotePlayer(index);
   };
 
