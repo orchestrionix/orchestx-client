@@ -1,22 +1,42 @@
-
 import { Modal } from "./modal";
 import { useContext, useState } from "react";
 import { BackwardOutline, ForwardOutline, PauseOutline, PlayOutline, XMarkOutline } from "../icons";
-import { formatTime, getPath, parseSongString, positionTimeLine } from "../../utils";
+import { formatTime, getPath, parseSongString } from "../../utils";
 import { nextRemotePlayer, prevRemotePlayer, toggelRemotePlayer } from "../../actions";
 import { STATUS_PLAYING } from "../../utils/constants";
 import { PlayerContext } from "../../playerProvider";
+import { usePlayerProgress } from "../../hooks/usePlayerProgress";
 
+/**
+ * Calculate progress bar width percentage
+ * Uses the smooth interpolated position for 60fps animation
+ */
+function calculateProgressWidth(length: number, position: number, isActive: boolean): string {
+  if (!isActive || length <= 0) {
+    return "0%";
+  }
+  const percentage = Math.min((position / length) * 100, 100);
+  return `${percentage}%`;
+}
 
 export default function PlayerControle() {
   const context = useContext(PlayerContext);
   const playerState = context?.playerState;
   const [openSongModal, setOpenSongModal] = useState(false);
 
-  const currentSong = parseSongString(playerState?.title ? playerState?.title : '');
+  // Use the smooth progress hook for 60fps animation
+  const { smoothPosition, isPlaying } = usePlayerProgress({ playerState });
 
+  const currentSong = parseSongString(playerState?.title ? playerState?.title : '');
+  const isActive = playerState?.status === 'paused' || playerState?.status === 'playing';
+  const songLength = playerState?.length ?? 0;
+
+  // Use smooth position for the progress bar
   const timeLineStyle = {
-    width: positionTimeLine(playerState?.length ? playerState?.length : 0, playerState?.position ? playerState?.position : 0, (playerState?.status === 'paused' || playerState?.status === 'playing') ? true : false),
+    width: calculateProgressWidth(songLength, smoothPosition, isActive),
+    // Add CSS transition only for non-playing states (like seeking)
+    // When playing, the requestAnimationFrame provides smooth animation
+    transition: isPlaying ? 'none' : 'width 0.1s ease-out',
   };
 
   const playingPictureStyle = {
@@ -32,7 +52,7 @@ export default function PlayerControle() {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-  }
+  };
 
   return (
     <>
@@ -43,7 +63,6 @@ export default function PlayerControle() {
           <div className="pt-8">
             <XMarkOutline className="h-7 cursor-pointer hover:text-gold" onClick={() => setOpenSongModal(false)} />
           </div>
-
 
           {/* Song Image */}
           <div className="flex z-0 text-center">
@@ -59,7 +78,10 @@ export default function PlayerControle() {
             {/* ProgressBar */}
             <div>
               <div className="relative h-1 bg-gray-200">
-                <div className="absolute h-full bg-gold flex items-center justify-end" style={timeLineStyle}>
+                <div 
+                  className="absolute h-full bg-gold flex items-center justify-end" 
+                  style={timeLineStyle}
+                >
                   <div className="rounded-full w-3 h-3 bg-white shadow"></div>
                 </div>
               </div>
@@ -68,12 +90,12 @@ export default function PlayerControle() {
             {/* Time Labels */}
             <div className="relative overflow-hidden">
               <div className="flex justify-between text-m font-semibold text-gray-300 my-3">
-                <div className=" w-24 text-left">
-                  {formatTime(playerState?.position ? playerState?.position : 0)}
+                <div className="w-24 text-left">
+                  {formatTime(smoothPosition)}
                 </div>
 
-                <div className=" w-24 text-right">
-                  {formatTime(playerState?.length ? playerState?.length : 0)}
+                <div className="w-24 text-right">
+                  {formatTime(songLength)}
                 </div>
               </div>
             </div>
@@ -81,35 +103,44 @@ export default function PlayerControle() {
             {/* Controles */}
             <div className="flex justify-around">
               <div className="flex space-x-6">
-                <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
-                  await prevRemotePlayer()}>
+                <button 
+                  className="focus:outline-none text-gray-300 hover:text-gold" 
+                  onClick={async () => await prevRemotePlayer()}
+                >
                   <BackwardOutline className="h-10" />
                 </button>
-                {playerState?.status === STATUS_PLAYING ?
-                  <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
-                    await toggelRemotePlayer()}>
+                {playerState?.status === STATUS_PLAYING ? (
+                  <button 
+                    className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                    onClick={async () => await toggelRemotePlayer()}
+                  >
                     <PauseOutline className="h-12" />
                   </button>
-                  :
-                  <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
-                    await toggelRemotePlayer()}>
+                ) : (
+                  <button 
+                    className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                    onClick={async () => await toggelRemotePlayer()}
+                  >
                     <PlayOutline className="h-12" />
                   </button>
-                }
-                <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
-                  await nextRemotePlayer()}>
+                )}
+                <button 
+                  className="focus:outline-none text-gray-300 hover:text-gold" 
+                  onClick={async () => await nextRemotePlayer()}
+                >
                   <ForwardOutline className="h-10" />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Footer, transparant icon */}
+          {/* Footer, transparent icon */}
           <div className="pb-8">
-            <XMarkOutline className="h-7  text-transparent" onClick={() => setOpenSongModal(false)} />
+            <XMarkOutline className="h-7 text-transparent" onClick={() => setOpenSongModal(false)} />
           </div>
         </div>
       </Modal>
+
       <div className="h-full shadow-lg flex flex-col justify-center">
         <div className="flex items-between">
           <div className="hidden xl:flex flex-1 justify-start align-middle">
@@ -120,10 +151,10 @@ export default function PlayerControle() {
                 src={getPath(currentSong.rhythm)}
               />
               <div className="flex flex-col px-2 pt-1 w-full">
-                <span className=" text-gray-200 capitalize font-semibold">
+                <span className="text-gray-200 capitalize font-semibold">
                   {currentSong.name}
                 </span>
-                <span className=" text-neutral-400 capitalize font-small">
+                <span className="text-neutral-400 capitalize font-small">
                   {currentSong.rhythm}
                 </span>
               </div>
@@ -133,8 +164,7 @@ export default function PlayerControle() {
           <div className="flex-1">
             <div className="">
               <div
-                className={`xl:hidden relative rounded-xl display ${true ? "animate-slideup" : "animate-slidedown"
-                  }`}
+                className={`xl:hidden relative rounded-xl display ${true ? "animate-slideup" : "animate-slidedown"}`}
                 style={playingPictureStyle}
                 onClick={() => setOpenSongModal(true)}
               >
@@ -142,14 +172,14 @@ export default function PlayerControle() {
                   className={`${true
                     ? "absolute p-4 inset-0 flex flex-col justify-end bg-gradient-to-b from-transparent to-black backdrop backdrop-blur-5 text-white"
                     : "display-hidden"
-                    }`}
+                  }`}
                 >
                   <h3 className="font-bold capitalize">{currentSong.name}</h3>
-                  <span className="opacity-80 animate-pulse"> {playerState?.status === STATUS_PLAYING ? 'now playing' : playerState?.status}</span>
+                  <span className="opacity-80 animate-pulse">
+                    {playerState?.status === STATUS_PLAYING ? 'now playing' : playerState?.status}
+                  </span>
                 </div>
               </div>
-
-
 
               <div>
                 <div className="relative h-1 bg-neutral-600">
@@ -163,31 +193,43 @@ export default function PlayerControle() {
               </div>
 
               <div className="flex justify-between text-xs font-semibold px-4 py-2 xl:p-0">
-                <div className=" w-24 text-left text-gray-200">{formatTime(playerState?.position ? playerState?.position : 0)}</div>
+                <div className="w-24 text-left text-gray-200">
+                  {formatTime(smoothPosition)}
+                </div>
 
                 <div className="flex space-x-4 p-2 py-4 xl:p-0 xl:mt-4">
-                  <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
-                    await prevRemotePlayer()}>
+                  <button 
+                    className="focus:outline-none text-gray-300 hover:text-gold" 
+                    onClick={async () => await prevRemotePlayer()}
+                  >
                     <BackwardOutline className="h-8" />
                   </button>
                   {playerState?.status === STATUS_PLAYING ? (
-                    <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
-                      await toggelRemotePlayer()}>
+                    <button 
+                      className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                      onClick={async () => await toggelRemotePlayer()}
+                    >
                       <PauseOutline className="h-10" />
                     </button>
                   ) : (
-                    <button className="focus:outline-non text-center text-gray-300 hover:text-gold" onClick={async () =>
-                      await toggelRemotePlayer()}>
+                    <button 
+                      className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                      onClick={async () => await toggelRemotePlayer()}
+                    >
                       <PlayOutline className="h-10" />
                     </button>
                   )}
-                  <button className="focus:outline-none text-gray-300 hover:text-gold" onClick={async () =>
-                    await nextRemotePlayer()}>
+                  <button 
+                    className="focus:outline-none text-gray-300 hover:text-gold" 
+                    onClick={async () => await nextRemotePlayer()}
+                  >
                     <ForwardOutline className="h-8" />
                   </button>
                 </div>
 
-                <div className=" w-24 text-right text-gray-200">{formatTime(playerState?.length ? playerState?.length : 0)}</div>
+                <div className="w-24 text-right text-gray-200">
+                  {formatTime(songLength)}
+                </div>
               </div>
             </div>
           </div>

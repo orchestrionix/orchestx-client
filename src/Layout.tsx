@@ -55,18 +55,21 @@ const teams: TeamItem[] = [
 const Layout = () => {
   const context = useContext(PlayerContext);
   const playerState = context?.playerState;
+  const connectionError = context?.connectionError;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
   const [showOverlay, setShowOverlay] = useState(false);
 
-  // if player is
+  // Show overlay when connection is lost or player has error
   useEffect(() => {
-    if (playerState?.status === "error") {
+    if (playerState?.status === "error" || connectionError) {
       setShowOverlay(true);
+    } else {
+      setShowOverlay(false);
     }
-  }, [playerState?.status]);
+  }, [playerState?.status, connectionError]);
 
 
   // Function to check if a navigation item is currently active
