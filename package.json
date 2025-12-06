@@ -30,7 +30,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run copy-to-server",
+    "copy-to-server": "rimraf ../orchestx-server/src/build && copyfiles -u 1 \"build/**/*\" \"../orchestx-server/src/build\"",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -58,7 +59,9 @@
     "@tailwindcss/typography": "^0.5.12",
     "@types/lodash": "^4.17.0",
     "autoprefixer": "^10.4.19",
+    "copyfiles": "^2.4.1",
     "postcss": "^8.4.38",
+    "rimraf": "^5.0.5",
     "tailwindcss": "^3.4.3"
   }
 }
