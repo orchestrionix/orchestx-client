@@ -54,15 +54,12 @@ const Home: React.FC = () => {
   const color2 = `hsl(${(hash + 180) % 360}, 70%, 50%)`;
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header Section */}
-      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header Section */}
+      <header className="flex-shrink-0 flex flex-col gap-3 sm:gap-5 border-b border-gray-800/5 dark:border-white/5 px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-4">
-          <div>
-              <h1 className="text-4xl font-bold text-white mb-4">Home</h1>
-              
-            </div>
+          <div className="flex flex-col gap-2 sm:gap-4">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Home</h1>
             <Breadcrumb 
               home={{ href: "/", name: "home" }} 
               items={[
@@ -77,92 +74,114 @@ const Home: React.FC = () => {
         </div>
       </header>
 
-      {/* Now Playing Header */}
-      <div className="bg-black/20 px-6 py-6 border-b border-white/5">
-        <div className="flex items-center gap-6">
-          <div className="h-20 w-20 bg-white/5 rounded-xl flex items-center justify-center shadow-lg">
-            <FiMusic className="w-10 h-10 text-gold/80" />
+      {/* Now Playing Header - Fixed */}
+      <div className="flex-shrink-0 bg-black/20 px-3 sm:px-6 py-3 sm:py-4 border-b border-white/5">
+        <div className="flex items-center gap-3 sm:gap-6">
+          <div className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 bg-white/5 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+            <FiMusic className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-gold/80" />
           </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-gold/90 font-medium text-sm uppercase tracking-wider">Now Playing</div>
-            <div className="text-white text-2xl font-bold">
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <div className="text-gold/90 font-medium text-xs sm:text-sm uppercase tracking-wider">Now Playing</div>
+            <div className="text-white text-base sm:text-lg lg:text-xl font-bold truncate">
               {playlistName || "No Playlist Selected"}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Section */}
-      <div className="flex-1 px-6 pt-6">
-        {listLoading ? (
-          <div className="grid place-items-center h-4/5">
-            <div className="mx-auto inline">
-              <BeatLoader color="#CCA483" size={25} />
+      {/* Scrollable Content Section */}
+      <div className="flex-1 overflow-auto min-h-0">
+        <div className="px-3 sm:px-6 py-3 sm:py-6">
+          {listLoading ? (
+            <div className="grid place-items-center h-40">
+              <BeatLoader color="#CCA483" size={20} />
             </div>
-          </div>
-        ) : (
-          <div className="w-full">
-            {playlist.length === 0 ? (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium text-gray-400 mb-4">No tracks in queue</h3>
-                <p className="text-sm text-gray-500">Add some music to your queue to get started</p>
-              </div>
-            ) : (
-              <div>
-                {/* Table Header */}
-                <div className="grid grid-cols-[50px_50px_1fr_160px_50px] items-center text-white/60 text-sm px-4 py-2 border-b border-white/10">
-                  <div className="text-center">#</div>
-                  <div></div> {/* For play button */}
-                  <div>Title</div>
-                  <div className="text-center">Rhythm</div>
-                  <div></div> {/* For options */}
+          ) : (
+            <div className="w-full">
+              {playlist.length === 0 ? (
+                <div className="text-center py-8 sm:py-12">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-400 mb-2 sm:mb-4">No tracks in queue</h3>
+                  <p className="text-xs sm:text-sm text-gray-500">Add some music to your queue to get started</p>
                 </div>
+              ) : (
+                <div>
+                  {/* Table Header - Hidden on mobile, show simplified version */}
+                  <div className="hidden sm:grid grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px_50px] items-center text-white/60 text-xs sm:text-sm px-2 sm:px-4 py-2 border-b border-white/10">
+                    <div className="text-center">#</div>
+                    <div></div>
+                    <div>Title</div>
+                    <div className="text-center">Rhythm</div>
+                    <div className="hidden lg:block"></div>
+                  </div>
 
-                {/* Table Body */}
-                <div className="divide-y divide-white/10">
-                  {playlist.map((item, index) => {
-
-                    const isCurrentItem = Number(playerState?.itemId) === item.index;
-
-                    // from the item.name remove any digits and special characters
-                    const name = item.name.replace(/[0-9]/g, "").replace(/[^\w\s]/g, "");
-                    
-                    return (
-                      <div
-                        key={item.index}
-                        className="grid grid-cols-[50px_50px_1fr_160px_50px] items-center px-4 py-3 text-white hover:bg-white/5 transition-colors group cursor-pointer"
-                        onClick={() => handleSelect(item.index)}
-                        onDoubleClick={() => handlePlay(item.index)}
-                      >
-                        <div className="text-white/60 text-center">{index + 1}</div>
-                        <div className="flex justify-center">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handlePlay(item.index);
-                            }}
-                            className={`${isCurrentItem ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
-                          >
-                            {isCurrentItem ? (
-                              <FiPlay className="w-5 h-5" />
-                            ) : (
-                              <FiPlay className="w-5 h-5" />
-                            )}
-                          </button>
+                  {/* Table Body */}
+                  <div className="divide-y divide-white/10">
+                    {playlist.map((item, index) => {
+                      const isCurrentItem = Number(playerState?.itemId) === item.index;
+                      const name = item.name.replace(/[0-9]/g, "").replace(/[^\w\s]/g, "");
+                      
+                      return (
+                        <div
+                          key={item.index}
+                          className={`
+                            grid grid-cols-[32px_1fr_auto] sm:grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px_50px] 
+                            items-center px-2 sm:px-4 py-2.5 sm:py-3 text-white hover:bg-white/5 transition-colors group cursor-pointer
+                            ${isCurrentItem ? 'bg-white/5' : ''}
+                          `}
+                          onClick={() => handleSelect(item.index)}
+                          onDoubleClick={() => handlePlay(item.index)}
+                        >
+                          {/* Mobile: Index with play button */}
+                          <div className="sm:hidden flex items-center justify-center">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePlay(item.index);
+                              }}
+                              className={`${isCurrentItem ? 'text-gold' : 'text-white/60'} hover:text-gold`}
+                            >
+                              <FiPlay className="w-4 h-4" />
+                            </button>
+                          </div>
+                          
+                          {/* Desktop: Index */}
+                          <div className="hidden sm:block text-white/60 text-center text-xs sm:text-sm">{index + 1}</div>
+                          
+                          {/* Desktop: Play button */}
+                          <div className="hidden sm:flex justify-center">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePlay(item.index);
+                              }}
+                              className={`${isCurrentItem ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
+                            >
+                              <FiPlay className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </button>
+                          </div>
+                          
+                          {/* Title - with rhythm on mobile */}
+                          <div className="min-w-0">
+                            <div className="truncate text-sm sm:text-base">{name}</div>
+                            <div className="sm:hidden text-xs text-white/50 truncate">{item.rhythm}</div>
+                          </div>
+                          
+                          {/* Rhythm - hidden on mobile */}
+                          <div className="hidden sm:block text-center text-white/60 text-xs sm:text-sm truncate">{item.rhythm}</div>
+                          
+                          {/* Options spacer - hidden on mobile and tablet */}
+                          <div className="hidden lg:flex justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 text-white/60 transition-opacity w-5 h-5" />
+                          </div>
                         </div>
-                        <div className="truncate">{name}</div>
-                        <div className="text-center text-white/60">{item.rhythm}</div>
-                        <div className="flex justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 text-white/60 transition-opacity w-5 h-5" />
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

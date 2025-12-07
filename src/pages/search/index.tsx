@@ -44,7 +44,7 @@ const Search: React.FC = () => {
   }, []);
 
   const renderGridView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
       {selectedNode?.children?.map((item: IDirectoryItem, i: number) => (
         <div
           key={i.toString() + item.name}
@@ -54,21 +54,21 @@ const Search: React.FC = () => {
               setNodeHistorie([...nodeHistorie, item]);
             }
           }}
-          className="group relative bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer"
+          className="group relative bg-white/5 rounded-lg p-3 sm:p-4 hover:bg-white/10 transition-colors cursor-pointer"
         >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-black/20">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-lg bg-black/20 flex-shrink-0">
               {item.type === "file" ? (
-                <DocumentOutline className="h-6 w-6 text-gold/80" />
+                <DocumentOutline className="h-5 w-5 sm:h-6 sm:w-6 text-gold/80" />
               ) : (
-                <FolderOutline className="h-6 w-6 text-gold/80" />
+                <FolderOutline className="h-5 w-5 sm:h-6 sm:w-6 text-gold/80" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
+              <p className="text-xs sm:text-sm font-medium text-white truncate">
                 {item.name}
               </p>
-              <p className="text-sm text-white/60">
+              <p className="text-xs text-white/60">
                 {item.type === "file" ? item.extension : "Folder"}
               </p>
             </div>
@@ -79,9 +79,9 @@ const Search: React.FC = () => {
                   setSelectedFileForMenu(item);
                   setOpenMenu(true);
                 }}
-                className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/10 rounded-full"
+                className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 sm:p-2 hover:bg-white/10 rounded-full flex-shrink-0"
               >
-                <PlusCircleOutline className="h-5 w-5 text-white/60 hover:text-gold" />
+                <PlusCircleOutline className="h-4 w-4 sm:h-5 sm:w-5 text-white/60 hover:text-gold" />
               </button>
             )}
           </div>
@@ -92,13 +92,13 @@ const Search: React.FC = () => {
 
   const renderListView = () => (
     <div>
-      {/* Table Header */}
-      <div className="grid grid-cols-[50px_50px_1fr_100px_50px] items-center text-white/60 text-sm px-4 py-2 border-b border-white/10">
+      {/* Table Header - hidden on mobile */}
+      <div className="hidden sm:grid grid-cols-[40px_40px_1fr_80px_40px] lg:grid-cols-[50px_50px_1fr_100px_50px] items-center text-white/60 text-xs sm:text-sm px-2 sm:px-4 py-2 border-b border-white/10">
         <div className="text-center">#</div>
-        <div></div> {/* For icon */}
+        <div></div>
         <div>Name</div>
         <div>Type</div>
-        <div></div> {/* For add button */}
+        <div></div>
       </div>
 
       {/* Table Body */}
@@ -112,20 +112,43 @@ const Search: React.FC = () => {
                 setNodeHistorie([...nodeHistorie, item]);
               }
             }}
-            className="grid grid-cols-[50px_50px_1fr_100px_50px] items-center px-4 py-3 text-white hover:bg-white/5 transition-colors group cursor-pointer"
+            className="grid grid-cols-[32px_1fr_32px] sm:grid-cols-[40px_40px_1fr_80px_40px] lg:grid-cols-[50px_50px_1fr_100px_50px] items-center px-2 sm:px-4 py-2.5 sm:py-3 text-white hover:bg-white/5 transition-colors group cursor-pointer"
           >
-            <div className="text-white/60 text-center">{i + 1}</div>
-            <div className="flex justify-center">
+            {/* Mobile: Icon only */}
+            <div className="sm:hidden flex justify-center">
               {item.type === "file" ? (
-                <DocumentOutline className="h-5 w-5 text-gold/80" />
+                <DocumentOutline className="h-4 w-4 text-gold/80" />
               ) : (
-                <FolderOutline className="h-5 w-5 text-gold/80" />
+                <FolderOutline className="h-4 w-4 text-gold/80" />
               )}
             </div>
-            <div className="truncate">{item.name}</div>
-            <div className="text-white/60">
+            
+            {/* Desktop: Index */}
+            <div className="hidden sm:block text-white/60 text-center text-xs sm:text-sm">{i + 1}</div>
+            
+            {/* Desktop: Icon */}
+            <div className="hidden sm:flex justify-center">
+              {item.type === "file" ? (
+                <DocumentOutline className="h-4 w-4 sm:h-5 sm:w-5 text-gold/80" />
+              ) : (
+                <FolderOutline className="h-4 w-4 sm:h-5 sm:w-5 text-gold/80" />
+              )}
+            </div>
+            
+            {/* Name - with type on mobile */}
+            <div className="min-w-0">
+              <div className="truncate text-sm">{item.name}</div>
+              <div className="sm:hidden text-xs text-white/50">
+                {item.type === "file" ? item.extension : "Folder"}
+              </div>
+            </div>
+            
+            {/* Type - hidden on mobile */}
+            <div className="hidden sm:block text-white/60 text-xs sm:text-sm">
               {item.type === "file" ? item.extension : "Folder"}
             </div>
+            
+            {/* Add button */}
             <div className="flex justify-center">
               {item.type === "file" && (
                 <button
@@ -134,9 +157,9 @@ const Search: React.FC = () => {
                     setSelectedFileForMenu(item);
                     setOpenMenu(true);
                   }}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/10 rounded-full"
+                  className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1 sm:p-2 hover:bg-white/10 rounded-full"
                 >
-                  <PlusCircleOutline className="h-5 w-5 text-white/60 hover:text-gold" />
+                  <PlusCircleOutline className="h-4 w-4 sm:h-5 sm:w-5 text-white/60 hover:text-gold" />
                 </button>
               )}
             </div>
@@ -147,14 +170,12 @@ const Search: React.FC = () => {
   );
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header Section */}
-      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h1 className="text-4xl font-bold text-white mb-4">Browse Files</h1>
-            </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header Section */}
+      <header className="flex-shrink-0 flex flex-col gap-3 sm:gap-5 border-b border-gray-800/5 dark:border-white/5 px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-2 sm:gap-4 min-w-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Browse Files</h1>
             <Breadcrumb 
               home={{ href: "/search", name: "browse" }} 
               items={[
@@ -167,39 +188,39 @@ const Search: React.FC = () => {
             />
           </div>
           {/* View Toggle */}
-          <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+          <div className="flex-shrink-0 flex items-center gap-1 sm:gap-2 bg-white/5 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-md transition-colors ${
+              className={`p-1.5 sm:p-2 rounded-md transition-colors ${
                 viewMode === 'grid' 
                   ? 'bg-white/10 text-gold' 
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              <FiGrid className="w-5 h-5" />
+              <FiGrid className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-md transition-colors ${
+              className={`p-1.5 sm:p-2 rounded-md transition-colors ${
                 viewMode === 'list' 
                   ? 'bg-white/10 text-gold' 
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              <FiList className="w-5 h-5" />
+              <FiList className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* File Path Navigation */}
-      <div className="bg-black/20 px-6 py-4 border-b border-white/5">
+      {/* File Path Navigation - Fixed */}
+      <div className="flex-shrink-0 bg-black/20 px-3 sm:px-6 py-3 sm:py-4 border-b border-white/5 overflow-x-auto">
         <nav className="flex" aria-label="File path">
-          <ol className="flex items-center space-x-2">
+          <ol className="flex items-center space-x-1 sm:space-x-2">
             {nodeHistorie.map((node, index) => (
               <React.Fragment key={node.name + index}>
                 {index === 0 ? (
-                  <li>
+                  <li className="flex-shrink-0">
                     <button
                       className="text-gold hover:text-gold/80 transition-colors"
                       onClick={() => {
@@ -207,18 +228,18 @@ const Search: React.FC = () => {
                         setNodeHistorie(nodeHistorie.slice(0, 1));
                       }}
                     >
-                      <HomeModernOutline className="h-5 w-5" />
+                      <HomeModernOutline className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   </li>
                 ) : (
-                  <li className="flex items-center">
-                    <ChevronRightOutline className="h-5 w-5 text-white/40" />
+                  <li className="flex items-center flex-shrink-0">
+                    <ChevronRightOutline className="h-4 w-4 sm:h-5 sm:w-5 text-white/40" />
                     <button
                       onClick={() => {
                         setSelectedNode(node);
                         setNodeHistorie(nodeHistorie.slice(0, index + 1));
                       }}
-                      className="ml-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
+                      className="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-white/60 hover:text-white transition-colors truncate max-w-[100px] sm:max-w-[150px]"
                     >
                       {node.name}
                     </button>
@@ -230,22 +251,20 @@ const Search: React.FC = () => {
         </nav>
       </div>
 
-      {/* File Explorer Content */}
-      <div className="flex-1 px-6 py-6">
+      {/* File Explorer Content - Scrollable */}
+      <div className="flex-1 overflow-auto min-h-0 px-3 sm:px-6 py-3 sm:py-6">
         {treeLoading ? (
-          <div className="grid place-items-center h-4/5">
-            <div className="mx-auto inline">
-              <BeatLoader color="#CCA483" size={25} />
-            </div>
+          <div className="grid place-items-center h-40">
+            <BeatLoader color="#CCA483" size={20} />
           </div>
         ) : (
           <div className="w-full">
             {selectedNode?.children && selectedNode.children.length > 0 ? (
               viewMode === 'grid' ? renderGridView() : renderListView()
             ) : (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium text-gray-400 mb-4">Empty folder</h3>
-                <p className="text-sm text-gray-500">This folder contains no files</p>
+              <div className="text-center py-8 sm:py-12">
+                <h3 className="text-base sm:text-lg font-medium text-gray-400 mb-2 sm:mb-4">Empty folder</h3>
+                <p className="text-xs sm:text-sm text-gray-500">This folder contains no files</p>
               </div>
             )}
           </div>
@@ -254,34 +273,34 @@ const Search: React.FC = () => {
 
       {/* Add to Playlist Modal */}
       <Modal open={openMenu} setOpen={setOpenMenu}>
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">Add to Playlist</h3>
+        <div className="p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl font-bold text-white">Add to Playlist</h3>
             <button
               onClick={() => setOpenMenu(false)}
-              className="text-white/60 hover:text-white"
+              className="text-white/60 hover:text-white p-1"
             >
-              <XMarkOutline className="w-5 h-5" />
+              <XMarkOutline className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
 
           {/* Song Preview */}
-          <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl mb-6">
-            <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-black/20">
-              <DocumentOutline className="h-6 w-6 text-gold/80" />
+          <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 rounded-xl mb-4 sm:mb-6">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-lg bg-black/20 flex-shrink-0">
+              <DocumentOutline className="h-5 w-5 sm:h-6 sm:w-6 text-gold/80" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
+              <p className="text-xs sm:text-sm font-medium text-white truncate">
                 {selectedFileForMenu?.name}
               </p>
-              <p className="text-sm text-white/60">
+              <p className="text-xs text-white/60">
                 {selectedFileForMenu?.extension}
               </p>
             </div>
           </div>
 
           {/* Playlists List */}
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-[50vh] overflow-auto">
             {playlists?.map((list: IPlaylist, index: number) => {
               // Generate gradient colors with moderate saturation
               const hash = list.playlistName
@@ -305,32 +324,32 @@ const Search: React.FC = () => {
                       toastError(error?.message ?? DEFAULT_ERROR_MESSAGE);
                     }
                   }}
-                  className="w-full group flex items-center gap-4 p-4 rounded-xl transition-all
+                  className="w-full group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all
                     border border-transparent hover:border-gold/20 bg-white/5 hover:bg-white/[0.07]"
                 >
                   {/* Playlist Icon with gradient */}
                   <div 
-                    className="h-12 w-12 rounded-lg flex items-center justify-center"
+                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{
                       background: `linear-gradient(135deg, rgba(0,0,0,0.5), ${color2})`
                     }}
                   >
-                    <FiMusic className="w-6 h-6 text-white/80" />
+                    <FiMusic className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" />
                   </div>
                   
                   {/* Playlist Info */}
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="font-medium text-white truncate">
+                    <p className="text-sm sm:text-base font-medium text-white truncate">
                       {list.playlistName}
                     </p>
-                    <p className="text-sm text-white/60">
+                    <p className="text-xs sm:text-sm text-white/60">
                       {list.songs?.length || 0} tracks
                     </p>
                   </div>
 
                   {/* Add Icon */}
-                  <div className="text-white/60 group-hover:text-gold transition-colors">
-                    <PlusCircleOutline className="w-5 h-5" />
+                  <div className="text-white/60 group-hover:text-gold transition-colors flex-shrink-0">
+                    <PlusCircleOutline className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </button>
               );
@@ -338,12 +357,12 @@ const Search: React.FC = () => {
 
             {/* Empty State */}
             {(!playlists || playlists.length === 0) && (
-              <div className="text-center py-8">
-                <div className="mx-auto w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                  <PlusCircleOutline className="w-6 h-6 text-white/20" />
+              <div className="text-center py-6 sm:py-8">
+                <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 sm:mb-4">
+                  <PlusCircleOutline className="w-5 h-5 sm:w-6 sm:h-6 text-white/20" />
                 </div>
-                <p className="text-white/60 font-medium">No playlists found</p>
-                <p className="text-sm text-white/40 mt-1">
+                <p className="text-sm sm:text-base text-white/60 font-medium">No playlists found</p>
+                <p className="text-xs sm:text-sm text-white/40 mt-1">
                   Create a playlist first to add songs
                 </p>
               </div>

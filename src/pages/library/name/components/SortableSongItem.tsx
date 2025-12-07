@@ -43,12 +43,31 @@ export interface SortableSongItemProps {
         ref={setNodeRef}
         {...attributes}
         style={style}
-        className={`grid grid-cols-[50px_50px_1fr_160px_50px] items-center px-4 py-3 text-white hover:bg-white/5 transition-colors group cursor-grab active:cursor-grabbing ${
-          isDragging ? "bg-white/5" : ""
-        }`}
+        className={`
+          grid grid-cols-[32px_1fr_32px] sm:grid-cols-[40px_40px_1fr_120px_40px] lg:grid-cols-[50px_50px_1fr_160px_50px] 
+          items-center px-2 sm:px-4 py-2.5 sm:py-3 text-white hover:bg-white/5 transition-colors group cursor-grab active:cursor-grabbing
+          ${isDragging ? "bg-white/5" : ""}
+          ${isPlaying ? "bg-white/5" : ""}
+        `}
       >
-        <div className="text-white/60 text-center">{index + 1}</div>
-        <div className="flex justify-center" {...listeners}>
+        {/* Mobile: Play button only */}
+        <div className="sm:hidden flex items-center justify-center" {...listeners}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlay(index);
+            }}
+            className={`${isPlaying ? 'text-gold' : 'text-white/60'} hover:text-gold`}
+          >
+            {isPlaying ? <FiPause className="w-4 h-4" /> : <FiPlay className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {/* Desktop: Index */}
+        <div className="hidden sm:block text-white/60 text-center text-xs sm:text-sm">{index + 1}</div>
+        
+        {/* Desktop: Play button */}
+        <div className="hidden sm:flex justify-center" {...listeners}>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -56,20 +75,29 @@ export interface SortableSongItemProps {
             }}
             className={`${isPlaying ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
           >
-            {isPlaying ? <FiPause className="w-5 h-5" /> : <FiPlay className="w-5 h-5" />}
+            {isPlaying ? <FiPause className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiPlay className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
         </div>
-        <div className="truncate" {...listeners}>{songInfo.name}</div>
-        <div className="text-center text-white/60" {...listeners}>{songInfo.rhythm}</div>
+        
+        {/* Title - with rhythm on mobile */}
+        <div className="min-w-0" {...listeners}>
+          <div className="truncate text-sm sm:text-base">{songInfo.name}</div>
+          <div className="sm:hidden text-xs text-white/50 truncate">{songInfo.rhythm}</div>
+        </div>
+        
+        {/* Rhythm - hidden on mobile */}
+        <div className="hidden sm:block text-center text-white/60 text-xs sm:text-sm truncate" {...listeners}>{songInfo.rhythm}</div>
+        
+        {/* Delete button */}
         <div className="flex justify-center">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onDelete(index);
             }}
-            className="opacity-0 group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity"
+            className="sm:opacity-0 sm:group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity p-1"
           >
-            <FiX className="w-5 h-5" />
+            <FiX className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>

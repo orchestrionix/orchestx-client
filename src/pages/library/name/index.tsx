@@ -186,11 +186,10 @@ const PlaylistDetail: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Add header with breadcrumbs */}
-      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header with breadcrumbs */}
+      <header className="flex-shrink-0 flex flex-col gap-3 sm:gap-5 border-b border-gray-800/5 dark:border-white/5 px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
         <div className="flex items-center gap-4">
-
           <Breadcrumb
             home={{ href: "/", name: "home" }}
             items={[
@@ -209,119 +208,128 @@ const PlaylistDetail: React.FC = () => {
         </div>
       </header>
 
-      {/* Playlist Header Section */}
-      <div className="relative p-6 mb-8">
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            background: `linear-gradient(to bottom right, #000000, ${color2})`,
-            filter: "blur(100px)",
-          }}
-        />
-        <div className="relative z-10 flex gap-6">
-          <div className="w-48 h-48 shadow-2xl group relative">
-            <div
-              className="w-full h-full rounded-lg"
-              style={{
-                background: `linear-gradient(to bottom right, #000000, ${color2})`,
-              }}
-            >
-              <FiMusic className="w-full h-full p-12 text-white/50" />
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-auto min-h-0">
+        {/* Playlist Header Section */}
+        <div className="relative p-3 sm:p-6 mb-4 sm:mb-8">
+          <div
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: `linear-gradient(to bottom right, #000000, ${color2})`,
+              filter: "blur(100px)",
+            }}
+          />
+          <div className="relative z-10 flex flex-col sm:flex-row gap-4 sm:gap-6">
+            {/* Album art */}
+            <div className="w-28 h-28 sm:w-36 sm:h-36 lg:w-48 lg:h-48 shadow-2xl group relative flex-shrink-0 mx-auto sm:mx-0">
+              <div
+                className="w-full h-full rounded-lg"
+                style={{
+                  background: `linear-gradient(to bottom right, #000000, ${color2})`,
+                }}
+              >
+                <FiMusic className="w-full h-full p-6 sm:p-8 lg:p-12 text-white/50" />
+              </div>
+              {/* Play button overlay */}
+              <button
+                onClick={handlePlayPlaylist}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+              >
+                <div className={`p-2 sm:p-3 lg:p-4 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
+                  {isPlaylistPlaying ? (
+                    <FiPause className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
+                  ) : (
+                    <FiPlay className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
+                  )}
+                </div>
+              </button>
             </div>
-            {/* Play button overlay */}
-            <button
-              onClick={handlePlayPlaylist}
-              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-            >
-              <div className={`p-4 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
-                {isPlaylistPlaying ? (
-                  <FiPause className="w-8 h-8" />
-                ) : (
-                  <FiPlay className="w-8 h-8" />
-                )}
+            
+            {/* Playlist info */}
+            <div className="flex flex-col justify-end flex-1 text-center sm:text-left min-w-0">
+              <div className="text-white/60 font-medium text-xs sm:text-sm">Playlist</div>
+              {isRenaming ? (
+                <div className="flex items-center gap-2 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start">
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold bg-white/10 text-white rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold w-full sm:w-auto"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRename();
+                      if (e.key === 'Escape') setIsRenaming(false);
+                    }}
+                  />
+                  <button
+                    onClick={handleRename}
+                    className="text-white/60 hover:text-white text-sm"
+                  >
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 sm:gap-4 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start flex-wrap">
+                  <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white truncate max-w-full">
+                    {playlist.playlistName}
+                  </h1>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setIsRenaming(true)}
+                      className="text-white/60 hover:text-white p-1"
+                    >
+                      <FiEdit2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="text-white/60 hover:text-red-500 p-1"
+                    >
+                      <FiTrash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div className="text-white/60 text-xs sm:text-sm">
+                {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
               </div>
-            </button>
-          </div>
-          <div className="flex flex-col justify-end flex-1">
-            <div className="text-white/60 font-medium">Playlist</div>
-            {isRenaming ? (
-              <div className="flex items-center gap-2 mt-2 mb-4">
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="text-3xl font-bold bg-white/10 text-white rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleRename();
-                    if (e.key === 'Escape') setIsRenaming(false);
-                  }}
-                />
-                <button
-                  onClick={handleRename}
-                  className="text-white/60 hover:text-white"
-                >
-                  Save
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4 mt-2 mb-4">
-                <h1 className="text-5xl font-bold text-white">
-                  {playlist.playlistName}
-                </h1>
-                <button
-                  onClick={() => setIsRenaming(true)}
-                  className="text-white/60 hover:text-white"
-                >
-                  <FiEdit2 className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="text-white/60 hover:text-red-500"
-                >
-                  <FiTrash2 className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-            <div className="text-white/60">
-              {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Tracks Section */}
-      <div className="flex-1 px-6">
-        <div className="grid grid-cols-[50px_50px_1fr_160px_50px] items-center text-white/60 text-sm px-4 py-2 border-b border-white/10">
-          <div className="text-center">#</div>
-          <div></div> {/* For play button */}
-          <div>Title</div>
-          <div className="text-center">Rhythm</div>
-          <div></div> {/* For delete button */}
-        </div>
+        {/* Tracks Section */}
+        <div className="px-3 sm:px-6">
+          {/* Table Header - simplified on mobile */}
+          <div className="hidden sm:grid grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px_50px] items-center text-white/60 text-xs sm:text-sm px-2 sm:px-4 py-2 border-b border-white/10">
+            <div className="text-center">#</div>
+            <div></div>
+            <div>Title</div>
+            <div className="text-center">Rhythm</div>
+            <div className="hidden lg:block"></div>
+          </div>
 
-        <DndContext
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={playlist?.songs.map(song => song.index.toString()) || []}
-            strategy={verticalListSortingStrategy}
+          <DndContext
+            sensors={sensors}
+            onDragEnd={handleDragEnd}
           >
-            <div className="divide-y divide-white/10">
-              {playlist?.songs.map((song, index) => (
-                <SortableSongItem
-                  key={song.index}
-                  song={song}
-                  index={index}
-                  onDelete={handleDeleteSong}
-                  onPlay={handlePlaySong}
-                  isPlaying={currentPlayingIndex === index}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+            <SortableContext
+              items={playlist?.songs.map(song => song.index.toString()) || []}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="divide-y divide-white/10">
+                {playlist?.songs.map((song, index) => (
+                  <SortableSongItem
+                    key={song.index}
+                    song={song}
+                    index={index}
+                    onDelete={handleDeleteSong}
+                    onPlay={handlePlaySong}
+                    isPlaying={currentPlayingIndex === index}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
       </div>
 
       <Modal open={showDeleteConfirm} setOpen={setShowDeleteConfirm}>

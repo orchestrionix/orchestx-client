@@ -64,14 +64,12 @@ const Library: React.FC = () => {
   // ==============================================================
 
   return (
-    <div className="h-full flex flex-col">
-      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h1 className="text-4xl font-bold text-white mb-4">Library</h1>
-              
-            </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <header className="flex-shrink-0 flex flex-col gap-3 sm:gap-5 border-b border-gray-800/5 dark:border-white/5 px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-2 sm:gap-4 min-w-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Library</h1>
             <Breadcrumb 
               home={{ href: "/", name: "home" }} 
               items={[
@@ -83,40 +81,39 @@ const Library: React.FC = () => {
               ]} 
             />
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex-shrink-0">
             <Button 
-              
               primary
               onClick={(e) => {
                 e.preventDefault();
                 setOpenPlaylistDetail(true);
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
-              Create Playlist
+              <span className="hidden sm:inline">Create Playlist</span>
+              <span className="sm:hidden">New</span>
             </Button> 
           </div>
         </div>
       </header>
 
-      <section className="flex-grow overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+      {/* Scrollable Content */}
+      <section className="flex-1 overflow-auto min-h-0 px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
         {listsLoading ? (
-          <div className="grid place-items-center h-4/5">
-            <div className="mx-auto inline">
-              <BeatLoader color="#CCA483" size={25} />
-            </div>
+          <div className="grid place-items-center h-40">
+            <BeatLoader color="#CCA483" size={20} />
           </div>
         ) : (
           <div className="w-full h-full">
             {playlists.length === 0 ? (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium text-gray-400 mb-4">No playlists yet</h3>
-                <p className="text-sm text-gray-500">Create your first playlist to get started</p>
+              <div className="text-center py-8 sm:py-12">
+                <h3 className="text-base sm:text-lg font-medium text-gray-400 mb-2 sm:mb-4">No playlists yet</h3>
+                <p className="text-xs sm:text-sm text-gray-500">Create your first playlist to get started</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
                 {playlists.map((list, index) => (
                   <div
                     key={index}
