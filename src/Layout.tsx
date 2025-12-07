@@ -8,8 +8,22 @@ import {
   ArrowPathIcon,
   MusicalNoteIcon,
 } from "@heroicons/react/24/outline";
+import {
+  ComputerDesktopIcon as ComputerDesktopIconSolid,
+} from "@heroicons/react/24/solid";
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { AdjustmentsVerticalOutline, Cog8ToothOutline, HomeModernOutline, ListBulletOutline, MagnifyingGlassOutline, UserOutline } from './components/icons';
+import { 
+  AdjustmentsVerticalOutline, 
+  Cog8ToothOutline, 
+  HomeModernOutline, 
+  ListBulletOutline, 
+  MagnifyingGlassOutline,
+  HomeModernSolid,
+  ListBulletSolid,
+  MagnifyingGlassSolid,
+  Cog8ToothSolid,
+  AdjustmentsVerticalSolid,
+} from './components/icons';
 import { classNames } from './utils';
 import PlayerControle from './components/player';
 import { PlayerContext } from './playerProvider';
@@ -19,6 +33,7 @@ interface NavigationItem {
   name: string;
   href: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  iconSolid: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 interface TeamItem extends NavigationItem {
@@ -26,9 +41,9 @@ interface TeamItem extends NavigationItem {
 }
 
 const navigation: NavigationItem[] = [
-  { name: "Home", href: "/", icon: HomeModernOutline },
-  { name: "Search", href: "search", icon: MagnifyingGlassOutline },
-  { name: "Library", href: "library", icon: ListBulletOutline },
+  { name: "Home", href: "/", icon: HomeModernOutline, iconSolid: HomeModernSolid },
+  { name: "Search", href: "search", icon: MagnifyingGlassOutline, iconSolid: MagnifyingGlassSolid },
+  { name: "Library", href: "library", icon: ListBulletOutline, iconSolid: ListBulletSolid },
 ];
 
 const teams: TeamItem[] = [
@@ -37,18 +52,21 @@ const teams: TeamItem[] = [
     name: "Settings",
     href: "/settings",
     icon: Cog8ToothOutline,
+    iconSolid: Cog8ToothSolid,
   },
   {
     id: 3,
     name: "Views",
     href: "/views",
     icon: ComputerDesktopIcon,
+    iconSolid: ComputerDesktopIconSolid,
   },
   {
     id: 2,
     name: "Volume",
     href: "/volume",
     icon: AdjustmentsVerticalOutline,
+    iconSolid: AdjustmentsVerticalSolid,
   },
 ];
 
@@ -157,130 +175,167 @@ const Layout = () => {
         ```
       */}
       <div>
+        {/* Mobile Bottom Sheet Navigation */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
             className="relative z-50 lg:hidden"
             onClose={setSidebarOpen}
           >
+            {/* Backdrop with blur */}
             <Transition.Child
               as={Fragment}
-              enter="transition-opacity ease-linear duration-300"
+              enter="transition-opacity ease-out duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
-              leave="transition-opacity ease-linear duration-300"
+              leave="transition-opacity ease-in duration-200"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-grey-800/80" />
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
             </Transition.Child>
 
-            <div className="fixed inset-0 flex">
+            {/* Bottom Sheet Container */}
+            <div className="fixed inset-0 flex items-end justify-center">
               <Transition.Child
                 as={Fragment}
-                enter="transition ease-in-out duration-300 transform"
-                enterFrom="-translate-x-full"
-                enterTo="translate-x-0"
-                leave="transition ease-in-out duration-300 transform"
-                leaveFrom="translate-x-0"
-                leaveTo="-translate-x-full"
+                enter="transition ease-out duration-300 transform"
+                enterFrom="translate-y-full"
+                enterTo="translate-y-0"
+                leave="transition ease-in duration-200 transform"
+                leaveFrom="translate-y-0"
+                leaveTo="translate-y-full"
               >
-                <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
-                  <Transition.Child
-                    as={Fragment}
-                    enter="ease-in-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in-out duration-300"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
+                <Dialog.Panel className="w-full max-w-lg">
+                  {/* Glass Card */}
+                  <div className="relative bg-gradient-to-b from-grey-700/95 to-grey-900/98 backdrop-blur-xl rounded-t-3xl border-t border-x border-white/[0.08] shadow-[0_-10px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+                    {/* Top edge highlight */}
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+                    
+                    {/* Drag Handle */}
+                    <div className="flex justify-center pt-3 pb-2">
+                      <div className="w-10 h-1 rounded-full bg-white/20" />
+                    </div>
+                    
+                    {/* Header */}
+                    <div className="px-6 pb-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {/* <img
+                          className="h-7 w-auto"
+                          src="/images/orchestrionix-logo-white.png"
+                          alt="Orchestrionix"
+                        /> */}
+                        
+                        <span className="text-white/60 text-sm font-medium">Menu</span>
+                      </div>
                       <button
                         type="button"
-                        className="-m-2.5 p-2.5"
+                        className="p-2 -mr-2 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors"
                         onClick={() => setSidebarOpen(false)}
                       >
-                        <span className="sr-only">Close sidebar</span>
-                        <XMarkIcon
-                          className="h-6 w-6 text-white"
-                          aria-hidden="true"
-                        />
+                        <XMarkIcon className="h-5 w-5 text-white/60" aria-hidden="true" />
                       </button>
                     </div>
-                  </Transition.Child>
-                  {/* Sidebar component, swap this element with another sidebar if you like */}
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black px-6 pb-2">
-                    <div className="flex h-16 shrink-0 items-center">
-                      <img
-                        className="h-8 w-auto"
-                        src="/images/orchestrionix-logo-white.png"
-                        alt="Orchestrionix"
-                      />
-                    </div>
-                    <nav className="flex flex-1 flex-col">
-                      <ul className="flex flex-1 flex-col gap-y-7">
-                        <li>
-                          <ul className="-mx-2 space-y-2">
-                            {navigation.map((item) => (
-                              <li key={item.name}>
-                                <Link
-                                  to={item.href}
-                                  className={classNames(
-                                    isActive(item.href)
-                                      ? "bg-gold text-white"
-                                      : "text-white hover:text-white hover:bg-gold",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                  )}
-                                >
-                                  <item.icon
-                                    className={classNames(
-                                      isActive(item.href)
-                                        ? "text-white"
-                                        : "text-white group-hover:text-white",
-                                      "h-6 w-6 shrink-0"
-                                    )}
-                                    aria-hidden="true"
-                                  />
-                                  {item.name}
-                                </Link >
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
-                        <li>
-                          <div className="text-xs font-semibold leading-6 text-white">
-                            Configuration
-                          </div>
-                          <ul className="-mx-2 mt-2 space-y-2">
-                            {teams.map((team) => (
-                              <li key={team.name}>
-                                <Link
-                                  to={team.href}
-                                  className={classNames(
-                                    isActive(team.href)
-                                      ? "bg-gold text-white"
-                                      : "text-white  hover:text-gold hover:bg-black",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                  )}
-                                >
-                                  <team.icon
-                                    className={classNames(
-                                      isActive(team.href)
-                                        ? "text-white"
-                                        : "text-white group-hover:text-gold",
-                                      "h-6 w-6 shrink-0"
-                                    )}
-                                    aria-hidden="true"
-                                  />
 
-                                  <span className="truncate">{team.name}</span>
-                                </Link >
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
-                      </ul>
+                    {/* Navigation Content */}
+                    <nav className="px-4 pb-8 max-h-[70vh] overflow-y-auto">
+                      {/* Main Navigation */}
+                      <div className="space-y-1">
+                        {navigation.map((item, idx) => {
+                          const active = isActive(item.href);
+                          const IconComponent = active ? item.iconSolid : item.icon;
+                          return (
+                            <Link
+                              key={item.name}
+                              to={item.href}
+                              onClick={() => setSidebarOpen(false)}
+                              className={classNames(
+                                active
+                                  ? "bg-gold/20 border-gold/40"
+                                  : "bg-transparent border-transparent hover:bg-white/5 active:bg-white/10",
+                                "group flex items-center gap-4 rounded-2xl px-4 py-4 border transition-all duration-200"
+                              )}
+                              style={{ 
+                                animationDelay: `${idx * 50}ms`,
+                                animation: sidebarOpen ? 'fadeSlideUp 0.3s ease-out forwards' : 'none'
+                              }}
+                            >
+                              <div className={classNames(
+                                active 
+                                  ? "bg-gold text-black" 
+                                  : "bg-white/10 text-white/70 group-hover:text-white group-hover:bg-white/15",
+                                "flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200"
+                              )}>
+                                <IconComponent className="h-5 w-5" aria-hidden="true" />
+                              </div>
+                              <span className={classNames(
+                                active ? "text-gold" : "text-white/80 group-hover:text-white",
+                                "text-base font-medium transition-colors"
+                              )}>
+                                {item.name}
+                              </span>
+                              {active && (
+                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-gold" />
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
+
+                      {/* Divider */}
+                      <div className="my-5 mx-2 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                      {/* Configuration Section */}
+                      <div className="mb-3 px-2">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-white/40">
+                          Configuration
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        {teams.map((team, idx) => {
+                          const active = isActive(team.href);
+                          const IconComponent = active ? team.iconSolid : team.icon;
+                          return (
+                            <Link
+                              key={team.name}
+                              to={team.href}
+                              onClick={() => setSidebarOpen(false)}
+                              className={classNames(
+                                active
+                                  ? "bg-gold/20 border-gold/40"
+                                  : "bg-transparent border-transparent hover:bg-white/5 active:bg-white/10",
+                                "group flex items-center gap-4 rounded-2xl px-4 py-4 border transition-all duration-200"
+                              )}
+                              style={{ 
+                                animationDelay: `${(navigation.length + idx) * 50}ms`,
+                                animation: sidebarOpen ? 'fadeSlideUp 0.3s ease-out forwards' : 'none'
+                              }}
+                            >
+                              <div className={classNames(
+                                active 
+                                  ? "bg-gold text-black" 
+                                  : "bg-white/10 text-white/70 group-hover:text-white group-hover:bg-white/15",
+                                "flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200"
+                              )}>
+                                <IconComponent className="h-5 w-5" aria-hidden="true" />
+                              </div>
+                              <span className={classNames(
+                                active ? "text-gold" : "text-white/80 group-hover:text-white",
+                                "text-base font-medium transition-colors"
+                              )}>
+                                {team.name}
+                              </span>
+                              {active && (
+                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-gold" />
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Safe area for home indicator */}
+                      <div className="h-4" />
                     </nav>
                   </div>
                 </Dialog.Panel>
@@ -303,30 +358,34 @@ const Layout = () => {
               <ul className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul className="-mx-2 space-y-4">
-                    {navigation.map((item) => (
-                      <li key={item.name}>
-                        <Link
-                          to={item.href}
-                          className={classNames(
-                            isActive(item.href)
-                              ? "bg-gold text-white"
-                              : "text-white hover:text-gold hover:bg-black",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                          )}
-                        >
-                          <item.icon
+                    {navigation.map((item) => {
+                      const active = isActive(item.href);
+                      const IconComponent = active ? item.iconSolid : item.icon;
+                      return (
+                        <li key={item.name}>
+                          <Link
+                            to={item.href}
                             className={classNames(
-                              isActive(item.href)
-                                ? "text-white"
-                                : "text-white group-hover:text-gold",
-                              "h-6 w-6 shrink-0"
+                              active
+                                ? "bg-gold text-white"
+                                : "text-white hover:text-gold hover:bg-black",
+                              "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                             )}
-                            aria-hidden="true"
-                          />
-                          {item.name}
-                        </Link >
-                      </li>
-                    ))}
+                          >
+                            <IconComponent
+                              className={classNames(
+                                active
+                                  ? "text-white"
+                                  : "text-white group-hover:text-gold",
+                                "h-6 w-6 shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </Link >
+                        </li>
+                      );
+                    })}
                   </ul>
                 </li>
                 <li>
@@ -334,30 +393,34 @@ const Layout = () => {
                     Configuration
                   </div>
                   <ul className="-mx-2 mt-2 space-y-3">
-                    {teams.map((team) => (
-                      <li key={team.name}>
-                        <Link
-                          to={team.href}
-                          className={classNames(
-                            isActive(team.href)
-                              ? "bg-gold text-white"
-                              : "text-white  hover:text-gold hover:bg-black",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                          )}
-                        >
-                          <team.icon
+                    {teams.map((team) => {
+                      const active = isActive(team.href);
+                      const IconComponent = active ? team.iconSolid : team.icon;
+                      return (
+                        <li key={team.name}>
+                          <Link
+                            to={team.href}
                             className={classNames(
-                              isActive(team.href)
-                                ? "text-white"
-                                : "text-white group-hover:text-gold",
-                              "h-6 w-6 shrink-0"
+                              active
+                                ? "bg-gold text-white"
+                                : "text-white  hover:text-gold hover:bg-black",
+                              "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                             )}
-                            aria-hidden="true"
-                          />
-                          <span className="truncate">{team.name}</span>
-                        </Link >
-                      </li>
-                    ))}
+                          >
+                            <IconComponent
+                              className={classNames(
+                                active
+                                  ? "text-white"
+                                  : "text-white group-hover:text-gold",
+                                "h-6 w-6 shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                            <span className="truncate">{team.name}</span>
+                          </Link >
+                        </li>
+                      );
+                    })}
                   </ul>
                 </li>
               </ul>
@@ -365,26 +428,26 @@ const Layout = () => {
           </div>
         </div>
 
-        {/* Sticky Div */}
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-black px-4 py-4 shadow-sm sm:px-6 lg:hidden h-16">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-40 flex items-center justify-between bg-black/95 backdrop-blur-sm px-4 py-3 border-b border-white/[0.05] lg:hidden h-14">
+          <div className="flex items-center gap-3">
+            <img
+              className="h-6 w-auto"
+              src="/images/orchestrionix-logo-white.png"
+              alt="Orchestrionix"
+            />
+          </div>
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-white lg:hidden"
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/15 transition-colors"
             onClick={() => setSidebarOpen(true)}
           >
-            <span className="sr-only">Open sidebar</span>
-            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+            <span className="sr-only">Open menu</span>
+            <Bars3Icon className="h-5 w-5 text-white/80" aria-hidden="true" />
           </button>
-          <div className="flex-1 text-sm font-semibold leading-6 text-white">
-            Orchestrionix
-          </div>
-          {/* <a href="#">
-            <span className="sr-only">Your profile</span>
-            <span>img</span>
-          </a> */}
         </div>
         {/* Main Content */}
-        <main className="lg:ml-72 p-1 pt-4 sm:p-5  bg-grey-900 lg:h-screen h-[calc(100vh-4rem)] overflow-hidden grid grid-rows-[1fr_auto]">
+        <main className="lg:ml-72 p-1 pt-4 sm:p-5 bg-grey-900 lg:h-screen h-[calc(100vh-3.5rem)] overflow-hidden grid grid-rows-[1fr_auto]">
           {/* Children Container: Occupies remaining space and scrolls if content overflows */}
           <div className="sm:bg-black rounded-3xl sm:px-8 xs:pb-4 xs:pt-1 sm:pt-4 overflow-auto">
             {<Outlet />}

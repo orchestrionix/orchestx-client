@@ -2,20 +2,20 @@ import React, { useEffect, useState, useContext } from "react";
 import Breadcrumb from "../../components/tailwind/breadcrumbs";
 import { PlayerContext } from "../../playerProvider";
 import { setViewModeRemotePlayer } from "../../actions";
-
-// There are 5 views
-// 1. Playlist view 
-// 2. Book view (ponskaart views, like a midi piano roll view)
-// 3. Animation view (animations of instruments)
-// 4. Karaoke view (lyrics)
-// 5. Slide Show
+import {
+  ListBulletIcon,
+  BookOpenIcon,
+  FilmIcon,
+  MicrophoneIcon,
+  PresentationChartLineIcon,
+} from "@heroicons/react/24/outline";
 
 const viewOptions = [
-  { id: 1, name: "Playlist View", description: "Standard playlist display" },
-  { id: 4, name: "Book View", description: "Ponskaart views, like a midi piano roll view" },
-  { id: 5, name: "Animation View", description: "Animations of instruments" },
-  { id: 3, name: "Karaoke View", description: "Display lyrics for songs" },
-  { id: 2, name: "Slide Show", description: "Display slides for presentations" },
+  { id: 1, name: "Playlist", size: "large", icon: ListBulletIcon },
+  { id: 4, name: "Book", size: "medium", icon: BookOpenIcon },
+  { id: 5, name: "Animation", size: "medium", icon: FilmIcon },
+  { id: 3, name: "Karaoke", size: "large", icon: MicrophoneIcon },
+  { id: 2, name: "Slide Show", size: "medium", icon: PresentationChartLineIcon },
 ];
 
 const ViewsPage: React.FC = () => {
@@ -43,10 +43,10 @@ const ViewsPage: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <header className="flex flex-col gap-5 border-b border-gray-800/5 dark:border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+      <header className="flex flex-col gap-4 border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-4xl font-bold text-white mb-4">Views</h1>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">Views</h1>
             <Breadcrumb 
               home={{ href: "/", name: "home" }} 
               items={[{ name: "views", href: "/views", current: true }]}
@@ -55,77 +55,96 @@ const ViewsPage: React.FC = () => {
         </div>
       </header>
 
-      <div className="flex-1 px-4 py-8 sm:px-6 lg:px-8 overflow-auto">
-        <div className="mx-auto max-w-[1920px]">
-          <h2 className="text-2xl font-semibold text-white mb-8">Select View Mode</h2>
-          
-          <div className="grid grid-cols-5 gap-6">
-            {viewOptions.map((view) => (
-              <div 
-                key={view.id}
-                className={`group relative cursor-pointer transition-all duration-300 rounded-lg
-                  ${activeView === view.id 
-                    ? 'bg-grey-800 ring-1 ring-gold' 
-                    : 'bg-grey-900/50 hover:bg-grey-800/80'
-                  }`}
-                onClick={() => !isChanging && handleViewChange(view.id)}
-              >
-                {/* Card Container */}
-                <div className="relative aspect-[16/10] p-4 flex flex-col">
-                  {/* Icon/Image Container */}
-                  <div className="flex-1 flex items-center justify-center mb-4">
-                    <div className={`relative w-16 h-16 transition-transform duration-300
-                      ${activeView === view.id 
-                        ? 'scale-110' 
-                        : 'group-hover:scale-110'
-                      }`}
-                    >
-                      <img
-                        src={`/images/views/_${view.id}.png`}
-                        className={`w-full h-full object-contain transition-opacity duration-300
-                          ${activeView === view.id 
-                            ? 'opacity-100' 
-                            : 'opacity-70 group-hover:opacity-100'
-                          }`}
-                        alt={view.name}
-                        onError={(e) => {
-                          e.currentTarget.src = "/images/album_.jpg";
-                        }}
-                      />
-                    </div>
+      <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8 overflow-auto">
+        <div className="mx-auto max-w-7xl">
+          {/* Bento Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {viewOptions.map((view) => {
+              const isActive = activeView === view.id;
+              const isLarge = view.size === "large";
+              
+              return (
+                <div
+                  key={view.id}
+                  className={`
+                    group relative cursor-pointer transition-all duration-300 rounded-xl overflow-hidden
+                    ${isLarge ? 'sm:col-span-2 lg:col-span-2' : 'sm:col-span-1 lg:col-span-1'}
+                    ${isActive 
+                      ? 'border-2 border-gold' 
+                      : 'border border-white/10 hover:border-white/20'
+                    }
+                    ${isChanging && isActive ? 'pointer-events-none' : ''}
+                  `}
+                  onClick={() => !isChanging && handleViewChange(view.id)}
+                >
+                  {/* Background Image */}
+                  <div className="absolute inset-0">
+                    <img
+                      src={`/images/views/_${view.id}.png`}
+                      className="w-full h-full object-cover"
+                      alt={view.name}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
                   </div>
+                  
+                  {/* Heavy Dark Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/98 via-black/97 to-black/98"></div>
 
-                  {/* Content */}
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-gold text-xs font-medium">
-                        View {view.id}
+                  {/* Card Content */}
+                  <div className={`
+                    relative z-10 p-6 sm:p-8 flex flex-col
+                    ${isLarge ? 'min-h-[200px] sm:min-h-[240px]' : 'min-h-[180px] sm:min-h-[200px]'}
+                  `}>
+                    {/* Top Section - Icon */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`
+                        transition-transform duration-300
+                        ${isActive ? 'scale-105' : 'group-hover:scale-105'}
+                      `}>
+                        <div className={`
+                          bg-black sm:bg-grey-900
+                          rounded-lg p-3 sm:p-4 transition-colors
+                        `}>
+                          {React.createElement(view.icon, {
+                            className: `
+                              w-12 h-12 sm:w-16 sm:h-16 transition-opacity
+                              ${isActive ? 'opacity-100 text-gold' : 'opacity-70 text-white group-hover:opacity-100'}
+                            `
+                          })}
+                        </div>
                       </div>
-                      {activeView === view.id && (
-                        <div className="flex items-center gap-1.5">
+                      
+                      {/* Active Indicator */}
+                      {isActive && (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gold/10 rounded-full">
                           <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
-                          <span className="text-gold text-xs">Active</span>
+                          <span className="text-gold text-xs font-medium">Active</span>
                         </div>
                       )}
                     </div>
-                    
-                    <div>
-                      <h3 className="text-white text-sm font-medium mb-1">{view.name}</h3>
-                      <p className="text-grey-300 text-xs opacity-60 group-hover:opacity-100 transition-opacity line-clamp-2">
-                        {view.description}
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Loading State */}
-                  {isChanging && activeView === view.id && (
-                    <div className="absolute inset-0 bg-grey-900/90 backdrop-blur-sm flex items-center justify-center rounded-lg">
-                      <div className="w-6 h-6 border-2 border-gold border-t-transparent rounded-full animate-spin"></div>
+                    {/* Bottom Section - Name */}
+                    <div className="mt-auto">
+                      <h3 className={`
+                        text-lg sm:text-xl font-semibold transition-colors px-3 py-2 rounded-lg bg-black sm:bg-grey-900
+                        ${isActive ? 'text-gold' : 'text-white group-hover:text-gold/80'}
+                      `}>
+                        {view.name}
+                      </h3>
                     </div>
-                  )}
+
+                    {/* Loading State */}
+                    {isChanging && isActive && (
+                      <div className="absolute inset-0 bg-black/80 flex items-center justify-center rounded-xl z-20">
+                        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

@@ -7,12 +7,13 @@ import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Library from './pages/library';
 import Search from './pages/search';
-import Home from './pages/home';
+
 import PlaylistDetail from './pages/library/name';
 import { ModalProvider } from './contexts/ModalContext';
 import Settings from './pages/settings';
 import Volume from './pages/volume';
 import Views from './pages/views';
+import Home from './pages/home';
 
 const App: React.FC = () => {
   return (

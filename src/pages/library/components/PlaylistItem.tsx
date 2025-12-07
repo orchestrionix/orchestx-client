@@ -48,11 +48,7 @@ const PlaylistItem: React.FC<IPlaylist> = ({ index, playlistName, songs }) => {
               </span>
             </div>
           </div>
-          <div className="text-center">
-            <h3 className="text-sm font-medium text-white capitalize pt-2">
-              {playlistName}
-            </h3>
-          </div>
+          
         </div>
       </>
     );

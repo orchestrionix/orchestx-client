@@ -211,7 +211,7 @@ const PlaylistDetail: React.FC = () => {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-auto min-h-0">
         {/* Playlist Header Section */}
-        <div className="relative p-3 sm:p-6 mb-4 sm:mb-8">
+        <div className="relative px-3 py-2 sm:p-6 mb-2 sm:mb-8">
           <div
             className="absolute inset-0 opacity-30"
             style={{
@@ -219,78 +219,157 @@ const PlaylistDetail: React.FC = () => {
               filter: "blur(100px)",
             }}
           />
-          <div className="relative z-10 flex flex-col sm:flex-row gap-4 sm:gap-6">
-            {/* Album art */}
-            <div className="w-28 h-28 sm:w-36 sm:h-36 lg:w-48 lg:h-48 shadow-2xl group relative flex-shrink-0 mx-auto sm:mx-0">
-              <div
-                className="w-full h-full rounded-lg"
-                style={{
-                  background: `linear-gradient(to bottom right, #000000, ${color2})`,
-                }}
-              >
-                <FiMusic className="w-full h-full p-6 sm:p-8 lg:p-12 text-white/50" />
+          <div className="relative z-10">
+            {/* Mobile: Compact horizontal layout */}
+            <div className="sm:hidden flex items-center gap-3">
+              {/* Small album art */}
+              <div className="w-16 h-16 shadow-lg group relative flex-shrink-0">
+                <div
+                  className="w-full h-full rounded-lg"
+                  style={{
+                    background: `linear-gradient(to bottom right, #000000, ${color2})`,
+                  }}
+                >
+                  <FiMusic className="w-full h-full p-3 text-white/50" />
+                </div>
+                {/* Play button overlay */}
+                <button
+                  onClick={handlePlayPlaylist}
+                  className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-active:opacity-100 transition-opacity rounded-lg"
+                >
+                  <div className={`p-1.5 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100'}`}>
+                    {isPlaylistPlaying ? (
+                      <FiPause className="w-3 h-3" />
+                    ) : (
+                      <FiPlay className="w-3 h-3" />
+                    )}
+                  </div>
+                </button>
               </div>
-              {/* Play button overlay */}
-              <button
-                onClick={handlePlayPlaylist}
-                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-              >
-                <div className={`p-2 sm:p-3 lg:p-4 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
-                  {isPlaylistPlaying ? (
-                    <FiPause className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
-                  ) : (
-                    <FiPlay className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
-                  )}
-                </div>
-              </button>
-            </div>
-            
-            {/* Playlist info */}
-            <div className="flex flex-col justify-end flex-1 text-center sm:text-left min-w-0">
-              <div className="text-white/60 font-medium text-xs sm:text-sm">Playlist</div>
-              {isRenaming ? (
-                <div className="flex items-center gap-2 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start">
-                  <input
-                    type="text"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    className="text-xl sm:text-2xl lg:text-3xl font-bold bg-white/10 text-white rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold w-full sm:w-auto"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleRename();
-                      if (e.key === 'Escape') setIsRenaming(false);
-                    }}
-                  />
-                  <button
-                    onClick={handleRename}
-                    className="text-white/60 hover:text-white text-sm"
-                  >
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 sm:gap-4 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start flex-wrap">
-                  <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white truncate max-w-full">
-                    {playlist.playlistName}
-                  </h1>
+              
+              {/* Playlist name and actions */}
+              <div className="flex-1 min-w-0">
+                {isRenaming ? (
                   <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      className="text-base font-bold bg-white/10 text-white rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold w-full"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleRename();
+                        if (e.key === 'Escape') setIsRenaming(false);
+                      }}
+                    />
                     <button
-                      onClick={() => setIsRenaming(true)}
-                      className="text-white/60 hover:text-white p-1"
+                      onClick={handleRename}
+                      className="text-white/60 hover:text-white text-xs"
                     >
-                      <FiEdit2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                    <button
-                      onClick={() => setShowDeleteConfirm(true)}
-                      className="text-white/60 hover:text-red-500 p-1"
-                    >
-                      <FiTrash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                      Save
                     </button>
                   </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-base font-bold text-white truncate flex-1">
+                      {playlist.playlistName}
+                    </h1>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => setIsRenaming(true)}
+                        className="text-white/60 hover:text-white p-1"
+                      >
+                        <FiEdit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="text-white/60 hover:text-red-500 p-1"
+                      >
+                        <FiTrash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="text-white/60 text-xs mt-0.5">
+                  {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
                 </div>
-              )}
-              <div className="text-white/60 text-xs sm:text-sm">
-                {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
+              </div>
+            </div>
+
+            {/* Desktop: Original layout */}
+            <div className="hidden sm:flex flex-col sm:flex-row gap-4 sm:gap-6">
+              {/* Album art */}
+              <div className="w-36 sm:w-36 lg:w-48 lg:h-48 shadow-2xl group relative flex-shrink-0 mx-auto sm:mx-0">
+                <div
+                  className="w-full h-full rounded-lg"
+                  style={{
+                    background: `linear-gradient(to bottom right, #000000, ${color2})`,
+                  }}
+                >
+                  <FiMusic className="w-full h-full p-8 lg:p-12 text-white/50" />
+                </div>
+                {/* Play button overlay */}
+                <button
+                  onClick={handlePlayPlaylist}
+                  className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                >
+                  <div className={`p-3 lg:p-4 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
+                    {isPlaylistPlaying ? (
+                      <FiPause className="w-6 h-6 lg:w-8 lg:h-8" />
+                    ) : (
+                      <FiPlay className="w-6 h-6 lg:w-8 lg:h-8" />
+                    )}
+                  </div>
+                </button>
+              </div>
+              
+              {/* Playlist info */}
+              <div className="flex flex-col justify-end flex-1 text-center sm:text-left min-w-0">
+                <div className="text-white/60 font-medium text-xs sm:text-sm">Playlist</div>
+                {isRenaming ? (
+                  <div className="flex items-center gap-2 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start">
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      className="text-base sm:text-2xl lg:text-3xl font-bold bg-white/10 text-white rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gold w-full sm:w-auto"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleRename();
+                        if (e.key === 'Escape') setIsRenaming(false);
+                      }}
+                    />
+                    <button
+                      onClick={handleRename}
+                      className="text-white/60 hover:text-white text-sm"
+                    >
+                      Save
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 sm:gap-4 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start flex-wrap">
+                    <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white truncate max-w-full">
+                      {playlist.playlistName}
+                    </h1>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setIsRenaming(true)}
+                        className="text-white/60 hover:text-white p-1"
+                      >
+                        <FiEdit2 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="text-white/60 hover:text-red-500 p-1"
+                      >
+                        <FiTrash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="text-white/60 text-xs sm:text-sm">
+                  {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
+                </div>
               </div>
             </div>
           </div>
