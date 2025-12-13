@@ -36,8 +36,10 @@ export interface IPlaylistSong {
 export interface IPlaylist {
     index: number;
     playlistName: string;
+    displayName: string;
     path: string;
     songs: IPlaylistSong[];
+    isPreset: boolean;
 } 
 
 export interface IActivePlaylistItem { index: number; rhythm: string; name: string; extension: string; }

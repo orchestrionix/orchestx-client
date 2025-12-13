@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
 import { FiGrid, FiList, FiMusic } from "react-icons/fi";
 import { IDirectoryItem, IPlaylist } from '../../types';
-import { addRemoteSongToPlaylist, getRemoteAllPlaylists, getRemoteFileDirectory } from '../../actions';
+import { addRemoteSongToPlaylist, addRemoteSongToPresetPlaylist, getPresetIndexFromName, getRemoteAllPlaylists, getRemoteFileDirectory } from '../../actions';
 import { ChevronRightOutline, DocumentOutline, FolderOutline, HomeModernOutline, PlusCircleOutline, XMarkOutline } from '../../components/icons';
 import { MenuModal } from '../../components/player/menuModal';
 import { toastError, toastSuccess } from '../../utils/toasts';
@@ -301,59 +301,138 @@ const Search: React.FC = () => {
 
           {/* Playlists List */}
           <div className="space-y-2 max-h-[50vh] overflow-auto">
-            {playlists?.map((list: IPlaylist, index: number) => {
-              // Generate gradient colors with moderate saturation
-              const hash = list.playlistName
-                .split("")
-                .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-              const color2 = `hsl(${(hash + 180) % 360}, 50%, 25%)`; // Moderate saturation, balanced darkness
+            {/* Preset Playlists Section */}
+            {playlists?.some(p => p.isPreset) && (
+              <div className="mb-4">
+                <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                  Preset Playlists
+                </h4>
+                <div className="space-y-2">
+                  {playlists?.filter(p => p.isPreset).map((list: IPlaylist) => {
+                    const color2 = `hsl(${35 + (list.index * 8) % 30}, 60%, 30%)`;
 
-              return (
-                <button
-                  key={list.index}
-                  onClick={async () => {
-                    try {
-                      await addRemoteSongToPlaylist(
-                        list.playlistName,
-                        selectedFileForMenu!.path
-                      );
-                      setOpenMenu(false);
-                      toastSuccess("Successfully added to playlist");
-                    } catch (error: any) {
-                      setOpenMenu(false);
-                      toastError(error?.message ?? DEFAULT_ERROR_MESSAGE);
-                    }
-                  }}
-                  className="w-full group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all
-                    border border-transparent hover:border-gold/20 bg-white/5 hover:bg-white/[0.07]"
-                >
-                  {/* Playlist Icon with gradient */}
-                  <div 
-                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{
-                      background: `linear-gradient(135deg, rgba(0,0,0,0.5), ${color2})`
-                    }}
-                  >
-                    <FiMusic className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" />
-                  </div>
-                  
-                  {/* Playlist Info */}
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm sm:text-base font-medium text-white truncate">
-                      {list.playlistName}
-                    </p>
-                    <p className="text-xs sm:text-sm text-white/60">
-                      {list.songs?.length || 0} tracks
-                    </p>
-                  </div>
+                    return (
+                      <button
+                        key={`preset-${list.index}`}
+                        onClick={async () => {
+                          try {
+                            const presetIndex = getPresetIndexFromName(list.playlistName);
+                            if (presetIndex >= 0) {
+                              await addRemoteSongToPresetPlaylist(
+                                presetIndex,
+                                selectedFileForMenu!.path
+                              );
+                            }
+                            setOpenMenu(false);
+                            toastSuccess("Successfully added to preset playlist");
+                          } catch (error: any) {
+                            setOpenMenu(false);
+                            toastError(error?.message ?? DEFAULT_ERROR_MESSAGE);
+                          }
+                        }}
+                        className="w-full group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all
+                          border border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10"
+                      >
+                        {/* Playlist Icon with gradient */}
+                        <div 
+                          className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0 relative"
+                          style={{
+                            background: `linear-gradient(135deg, rgba(0,0,0,0.5), ${color2})`
+                          }}
+                        >
+                          <FiMusic className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" />
+                        </div>
+                        
+                        {/* Playlist Info */}
+                        <div className="flex-1 min-w-0 text-left">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm sm:text-base font-medium text-white truncate">
+                              {list.displayName || list.playlistName}
+                            </p>
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/80 text-black rounded flex-shrink-0">
+                              Preset
+                            </span>
+                          </div>
+                          <p className="text-xs sm:text-sm text-white/60">
+                            {list.songs?.length || 0} tracks
+                          </p>
+                        </div>
 
-                  {/* Add Icon */}
-                  <div className="text-white/60 group-hover:text-gold transition-colors flex-shrink-0">
-                    <PlusCircleOutline className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                </button>
-              );
-            })}
+                        {/* Add Icon */}
+                        <div className="text-white/60 group-hover:text-amber-500 transition-colors flex-shrink-0">
+                          <PlusCircleOutline className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Regular Playlists Section */}
+            {playlists?.some(p => !p.isPreset) && (
+              <div>
+                <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold"></span>
+                  My Playlists
+                </h4>
+                <div className="space-y-2">
+                  {playlists?.filter(p => !p.isPreset).map((list: IPlaylist, index: number) => {
+                    const hash = list.playlistName
+                      .split("")
+                      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                    const color2 = `hsl(${(hash + 180) % 360}, 50%, 25%)`;
+
+                    return (
+                      <button
+                        key={`regular-${list.index}`}
+                        onClick={async () => {
+                          try {
+                            await addRemoteSongToPlaylist(
+                              list.playlistName,
+                              selectedFileForMenu!.path
+                            );
+                            setOpenMenu(false);
+                            toastSuccess("Successfully added to playlist");
+                          } catch (error: any) {
+                            setOpenMenu(false);
+                            toastError(error?.message ?? DEFAULT_ERROR_MESSAGE);
+                          }
+                        }}
+                        className="w-full group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all
+                          border border-transparent hover:border-gold/20 bg-white/5 hover:bg-white/[0.07]"
+                      >
+                        {/* Playlist Icon with gradient */}
+                        <div 
+                          className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{
+                            background: `linear-gradient(135deg, rgba(0,0,0,0.5), ${color2})`
+                          }}
+                        >
+                          <FiMusic className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" />
+                        </div>
+                        
+                        {/* Playlist Info */}
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-sm sm:text-base font-medium text-white truncate">
+                            {list.displayName || list.playlistName}
+                          </p>
+                          <p className="text-xs sm:text-sm text-white/60">
+                            {list.songs?.length || 0} tracks
+                          </p>
+                        </div>
+
+                        {/* Add Icon */}
+                        <div className="text-white/60 group-hover:text-gold transition-colors flex-shrink-0">
+                          <PlusCircleOutline className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Empty State */}
             {(!playlists || playlists.length === 0) && (

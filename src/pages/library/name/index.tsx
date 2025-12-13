@@ -6,10 +6,13 @@ import { IPlaylist } from "../../../types";
 import {
   deleteRemotePlaylist,
   deleteRemoteSongFromPlaylistByIndex,
+  deleteRemoteSongFromPresetPlaylistByIndex,
+  getPresetIndexFromName,
   getRemoteAllPlaylists,
   loadPlaylistRemotePlayer,
   renameRemotePlaylist,
-  updateRemotePlaylist
+  updateRemotePlaylist,
+  updateRemotePresetPlaylist
 } from "../../../actions";
 import { toastError, toastSuccess } from "../../../utils/toasts";
 import { MenuModal } from "../../../components/player/menuModal";
@@ -42,6 +45,10 @@ const PlaylistDetail: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isPlaylistPlaying, setIsPlaylistPlaying] = useState(false);
   const [currentPlayingIndex, setCurrentPlayingIndex] = useState<number | null>(null);
+
+  // Check if this is a preset playlist
+  const isPreset = playlist?.isPreset ?? false;
+  const presetIndex = name ? getPresetIndexFromName(name) : -1;
 
   // Configure sensors for both mouse/touch input
   const sensors = useSensors(
@@ -111,7 +118,11 @@ const PlaylistDetail: React.FC = () => {
     if (!playlist) return;
 
     try {
-      await deleteRemoteSongFromPlaylistByIndex(playlist.playlistName, index);
+      if (isPreset && presetIndex >= 0) {
+        await deleteRemoteSongFromPresetPlaylistByIndex(presetIndex, index);
+      } else {
+        await deleteRemoteSongFromPlaylistByIndex(playlist.playlistName, index);
+      }
       toastSuccess("Song removed from playlist");
       fetchPlaylist();
     } catch (error: any) {
@@ -138,10 +149,17 @@ const PlaylistDetail: React.FC = () => {
 
       try {
         // Update the playlist order on the server
-        await updateRemotePlaylist(
-          playlist.playlistName,
-          newSongs.map(song => song.path)
-        );
+        if (isPreset && presetIndex >= 0) {
+          await updateRemotePresetPlaylist(
+            presetIndex,
+            newSongs.map(song => song.path)
+          );
+        } else {
+          await updateRemotePlaylist(
+            playlist.playlistName,
+            newSongs.map(song => song.path)
+          );
+        }
       } catch (error: any) {
         toastError(error.message);
         // Revert the change if the server update fails
@@ -154,7 +172,10 @@ const PlaylistDetail: React.FC = () => {
   const hash = playlist?.playlistName
     .split("")
     .reduce((acc, char) => acc + char.charCodeAt(0), 0) ?? 0;
-  const color2 = `hsl(${(hash + 180) % 360}, 70%, 50%)`;
+  // Presets get amber/orange tones, regular playlists get varied colors
+  const color2 = isPreset 
+    ? `hsl(${35 + ((playlist?.index ?? 0) * 8) % 30}, 80%, 45%)`
+    : `hsl(${(hash + 180) % 360}, 70%, 50%)`;
 
   // Placeholder for play functions (you'll implement these)
   const handlePlayPlaylist = async () => {
@@ -199,7 +220,7 @@ const PlaylistDetail: React.FC = () => {
                 current: false
               },
               {
-                name: playlist?.playlistName || "",
+                name: playlist?.displayName || playlist?.playlistName || "",
                 href: `/library/${encodeURIComponent(playlist?.playlistName || "")}`,
                 current: true
               }
@@ -225,7 +246,7 @@ const PlaylistDetail: React.FC = () => {
               {/* Small album art */}
               <div className="w-16 h-16 shadow-lg group relative flex-shrink-0">
                 <div
-                  className="w-full h-full rounded-lg"
+                  className={`w-full h-full rounded-lg ${isPreset ? 'ring-2 ring-amber-500/50' : ''}`}
                   style={{
                     background: `linear-gradient(to bottom right, #000000, ${color2})`,
                   }}
@@ -237,7 +258,7 @@ const PlaylistDetail: React.FC = () => {
                   onClick={handlePlayPlaylist}
                   className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-active:opacity-100 transition-opacity rounded-lg"
                 >
-                  <div className={`p-1.5 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100'}`}>
+                  <div className={`p-1.5 rounded-full ${isPreset ? 'bg-amber-500' : 'bg-gold'} text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100'}`}>
                     {isPlaylistPlaying ? (
                       <FiPause className="w-3 h-3" />
                     ) : (
@@ -249,7 +270,7 @@ const PlaylistDetail: React.FC = () => {
               
               {/* Playlist name and actions */}
               <div className="flex-1 min-w-0">
-                {isRenaming ? (
+                {isRenaming && !isPreset ? (
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -271,23 +292,32 @@ const PlaylistDetail: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <h1 className="text-base font-bold text-white truncate flex-1">
-                      {playlist.playlistName}
-                    </h1>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <button
-                        onClick={() => setIsRenaming(true)}
-                        className="text-white/60 hover:text-white p-1"
-                      >
-                        <FiEdit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="text-white/60 hover:text-red-500 p-1"
-                      >
-                        <FiTrash2 className="w-3.5 h-3.5" />
-                      </button>
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <h1 className="text-base font-bold text-white truncate">
+                        {playlist.displayName || playlist.playlistName}
+                      </h1>
+                      {isPreset && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-black rounded flex-shrink-0">
+                          Preset
+                        </span>
+                      )}
                     </div>
+                    {!isPreset && (
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => setIsRenaming(true)}
+                          className="text-white/60 hover:text-white p-1"
+                        >
+                          <FiEdit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          className="text-white/60 hover:text-red-500 p-1"
+                        >
+                          <FiTrash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="text-white/60 text-xs mt-0.5">
@@ -301,7 +331,7 @@ const PlaylistDetail: React.FC = () => {
               {/* Album art */}
               <div className="w-36 sm:w-36 lg:w-48 lg:h-48 shadow-2xl group relative flex-shrink-0 mx-auto sm:mx-0">
                 <div
-                  className="w-full h-full rounded-lg"
+                  className={`w-full h-full rounded-lg ${isPreset ? 'ring-2 ring-amber-500/50' : ''}`}
                   style={{
                     background: `linear-gradient(to bottom right, #000000, ${color2})`,
                   }}
@@ -313,7 +343,7 @@ const PlaylistDetail: React.FC = () => {
                   onClick={handlePlayPlaylist}
                   className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
                 >
-                  <div className={`p-3 lg:p-4 rounded-full bg-gold text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
+                  <div className={`p-3 lg:p-4 rounded-full ${isPreset ? 'bg-amber-500' : 'bg-gold'} text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
                     {isPlaylistPlaying ? (
                       <FiPause className="w-6 h-6 lg:w-8 lg:h-8" />
                     ) : (
@@ -325,8 +355,15 @@ const PlaylistDetail: React.FC = () => {
               
               {/* Playlist info */}
               <div className="flex flex-col justify-end flex-1 text-center sm:text-left min-w-0">
-                <div className="text-white/60 font-medium text-xs sm:text-sm">Playlist</div>
-                {isRenaming ? (
+                <div className="text-white/60 font-medium text-xs sm:text-sm flex items-center gap-2 justify-center sm:justify-start">
+                  {isPreset ? 'Preset Playlist' : 'Playlist'}
+                  {isPreset && (
+                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-black rounded">
+                      Preset
+                    </span>
+                  )}
+                </div>
+                {isRenaming && !isPreset ? (
                   <div className="flex items-center gap-2 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start">
                     <input
                       type="text"
@@ -349,22 +386,24 @@ const PlaylistDetail: React.FC = () => {
                 ) : (
                   <div className="flex items-center gap-2 sm:gap-4 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start flex-wrap">
                     <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white truncate max-w-full">
-                      {playlist.playlistName}
+                      {playlist.displayName || playlist.playlistName}
                     </h1>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setIsRenaming(true)}
-                        className="text-white/60 hover:text-white p-1"
-                      >
-                        <FiEdit2 className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="text-white/60 hover:text-red-500 p-1"
-                      >
-                        <FiTrash2 className="w-5 h-5" />
-                      </button>
-                    </div>
+                    {!isPreset && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setIsRenaming(true)}
+                          className="text-white/60 hover:text-white p-1"
+                        >
+                          <FiEdit2 className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          className="text-white/60 hover:text-red-500 p-1"
+                        >
+                          <FiTrash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="text-white/60 text-xs sm:text-sm">

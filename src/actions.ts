@@ -396,6 +396,92 @@ export async function updateRemoteSettings(settings: Partial<Settings>): Promise
 }
 
 //=========================================================================================
+//========================= P R E S E T   P L A Y L I S T S ==============================
+//=========================================================================================
+
+export async function getRemoteAllPresetPlaylists(): Promise<IPlaylist[]> {
+  const response = await fetch(`${API_BASE_URL}/api/get-all-preset-playlists`);
+
+  if (!response.ok) {
+    toastError("Failed to fetch preset playlists.");
+  }
+
+  const data = await response.json();
+  return data.playlists;
+}
+
+export async function addRemoteSongToPresetPlaylist(
+  presetIndex: number,
+  songPath: string
+) {
+  const response = await fetch(`${API_BASE_URL}/api/add-song-to-preset-playlist`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ presetIndex, songPath }),
+  });
+
+  if (!response.ok) {
+    toastError("Failed to add song to preset playlist.");
+  }
+}
+
+export async function deleteRemoteSongFromPresetPlaylistByIndex(
+  presetIndex: number,
+  songIndex: number
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/delete-song-from-preset-playlist-by-index`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ presetIndex, songIndex }),
+    }
+  );
+
+  if (!response.ok) {
+    toastError("Failed to delete song from preset playlist.");
+  }
+}
+
+export async function updateRemotePresetPlaylist(presetIndex: number, songs: string[]) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/update-preset-playlist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ presetIndex, songs }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update preset playlist.");
+    }
+
+    return data.message;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+/**
+ * Get preset index from playlist name (e.g., "PresetPlaylist0" -> 0)
+ * Returns -1 if not a preset playlist
+ */
+export function getPresetIndexFromName(playlistName: string): number {
+  const match = playlistName.match(/^PresetPlaylist(\d+)$/);
+  if (!match) return -1;
+  const index = parseInt(match[1], 10);
+  if (index < 0 || index > 9) return -1;
+  return index;
+}
+
+//=========================================================================================
 //=========================================================================================
 //=========================================================================================
 

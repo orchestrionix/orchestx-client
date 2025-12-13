@@ -113,24 +113,66 @@ const Library: React.FC = () => {
                 <p className="text-xs sm:text-sm text-gray-500">Create your first playlist to get started</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
-                {playlists.map((list, index) => (
-                  <div
-                    key={index}
-                    className="relative cursor-pointer"
-                    onClick={() => {
-                      navigate(`/library/${encodeURIComponent(list.playlistName)}`);
-                    }}
-                  >
-                    <PlaylistItem
-                      key={index}
-                      index={list.index}
-                      playlistName={list.playlistName}
-                      songs={list.songs}
-                      path={list.path}
-                    />
+              <div className="space-y-6">
+                {/* Preset Playlists Section */}
+                {playlists.some(p => p.isPreset) && (
+                  <div>
+                    <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      Preset Playlists
+                    </h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
+                      {playlists.filter(p => p.isPreset).map((list, index) => (
+                        <div
+                          key={`preset-${index}`}
+                          className="relative cursor-pointer"
+                          onClick={() => {
+                            navigate(`/library/${encodeURIComponent(list.playlistName)}`);
+                          }}
+                        >
+                          <PlaylistItem
+                            index={list.index}
+                            playlistName={list.playlistName}
+                            displayName={list.displayName}
+                            songs={list.songs}
+                            path={list.path}
+                            isPreset={true}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
+
+                {/* Regular Playlists Section */}
+                {playlists.some(p => !p.isPreset) && (
+                  <div>
+                    <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-gold"></span>
+                      My Playlists
+                    </h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+                      {playlists.filter(p => !p.isPreset).map((list, index) => (
+                        <div
+                          key={`regular-${index}`}
+                          className="relative cursor-pointer"
+                          onClick={() => {
+                            navigate(`/library/${encodeURIComponent(list.playlistName)}`);
+                          }}
+                        >
+                          <PlaylistItem
+                            index={list.index}
+                            playlistName={list.playlistName}
+                            displayName={list.displayName}
+                            songs={list.songs}
+                            path={list.path}
+                            isPreset={false}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
