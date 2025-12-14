@@ -121,7 +121,7 @@ const PlaylistDetail: React.FC = () => {
       if (isPreset && presetIndex >= 0) {
         await deleteRemoteSongFromPresetPlaylistByIndex(presetIndex, index);
       } else {
-        await deleteRemoteSongFromPlaylistByIndex(playlist.playlistName, index);
+      await deleteRemoteSongFromPlaylistByIndex(playlist.playlistName, index);
       }
       toastSuccess("Song removed from playlist");
       fetchPlaylist();
@@ -155,10 +155,10 @@ const PlaylistDetail: React.FC = () => {
             newSongs.map(song => song.path)
           );
         } else {
-          await updateRemotePlaylist(
-            playlist.playlistName,
-            newSongs.map(song => song.path)
-          );
+        await updateRemotePlaylist(
+          playlist.playlistName,
+          newSongs.map(song => song.path)
+        );
         }
       } catch (error: any) {
         toastError(error.message);
@@ -295,7 +295,7 @@ const PlaylistDetail: React.FC = () => {
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <h1 className="text-base font-bold text-white truncate">
                         {playlist.displayName || playlist.playlistName}
-                      </h1>
+                    </h1>
                       {isPreset && (
                         <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-black rounded flex-shrink-0">
                           Preset
@@ -303,20 +303,20 @@ const PlaylistDetail: React.FC = () => {
                       )}
                     </div>
                     {!isPreset && (
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <button
-                          onClick={() => setIsRenaming(true)}
-                          className="text-white/60 hover:text-white p-1"
-                        >
-                          <FiEdit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setShowDeleteConfirm(true)}
-                          className="text-white/60 hover:text-red-500 p-1"
-                        >
-                          <FiTrash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => setIsRenaming(true)}
+                        className="text-white/60 hover:text-white p-1"
+                      >
+                        <FiEdit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="text-white/60 hover:text-red-500 p-1"
+                      >
+                        <FiTrash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     )}
                   </div>
                 )}
@@ -389,20 +389,20 @@ const PlaylistDetail: React.FC = () => {
                       {playlist.displayName || playlist.playlistName}
                     </h1>
                     {!isPreset && (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setIsRenaming(true)}
-                          className="text-white/60 hover:text-white p-1"
-                        >
-                          <FiEdit2 className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => setShowDeleteConfirm(true)}
-                          className="text-white/60 hover:text-red-500 p-1"
-                        >
-                          <FiTrash2 className="w-5 h-5" />
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setIsRenaming(true)}
+                        className="text-white/60 hover:text-white p-1"
+                      >
+                        <FiEdit2 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="text-white/60 hover:text-red-500 p-1"
+                      >
+                        <FiTrash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                     )}
                   </div>
                 )}

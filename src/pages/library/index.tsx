@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { IPlaylist } from "../../types";
 import { createRemotePlaylist, getRemoteAllPlaylists } from "../../actions";
 import PlaylistItem from "./components/PlaylistItem";
+import PresetItem from "./components/PresetItem";
 import { DEFAULT_TOAST_CONFIG, DEFAULT_TOAST_CREATE, toastError, toastSuccess } from "../../utils/toasts";
 import { toast } from "react-toastify";
 import { ModalV2 } from "../../components/tailwind/modalV2";
@@ -118,10 +119,10 @@ const Library: React.FC = () => {
                 {playlists.some(p => p.isPreset) && (
                   <div>
                     <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                      Preset Playlists
+                      <span className="w-2 h-2 rounded-full bg-gold"></span>
+                      Presets
                     </h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-10 gap-2 sm:gap-4">
                       {playlists.filter(p => p.isPreset).map((list, index) => (
                         <div
                           key={`preset-${index}`}
@@ -130,7 +131,7 @@ const Library: React.FC = () => {
                             navigate(`/library/${encodeURIComponent(list.playlistName)}`);
                           }}
                         >
-                          <PlaylistItem
+                          <PresetItem
                             index={list.index}
                             playlistName={list.playlistName}
                             displayName={list.displayName}

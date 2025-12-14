@@ -29,7 +29,7 @@ const PlaylistItem: React.FC<IPlaylist> = ({ index, playlistName, displayName, s
   
     return (
       <>
-        <div className={`group relative p-4 rounded-xl bg-black sm:bg-grey-900 ${isPreset ? 'ring-1 ring-amber-500/30' : ''}`}>
+        <div className={`group relative p-4 rounded-xl bg-black sm:bg-grey-900 hover:bg-grey-700 ${isPreset ? 'ring-1 ring-amber-500/30' : ''}`}>
           <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg relative">
             {/* Image Background */}
             <img
@@ -43,7 +43,7 @@ const PlaylistItem: React.FC<IPlaylist> = ({ index, playlistName, displayName, s
               className="absolute inset-0 w-full h-full"
               style={{ backgroundImage: `url(${svgBackground})`, opacity: 0.5 }}
             ></div>
-
+  
             {/* Preset badge */}
             {isPreset && (
               <span className="absolute top-2 right-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-black rounded">
