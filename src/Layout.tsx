@@ -348,13 +348,11 @@ const Layout = () => {
           {/* Sidebar component, swap this element with another sidebar if you like border-gold vertical devider*/}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto  bg-black px-6">
             <div className="flex h-16 shrink-0 items-center">
-              <a href="https://orchestx-terminal-production.up.railway.app">
-                <img
-                  className="h-8 w-auto"
-                  src="/images/orchestrionix-logo-white.png"
-                  alt="Orchestrionix"
-                />
-              </a>
+              <img
+                className="h-8 w-auto"
+                src="/images/orchestrionix-logo-white.png"
+                alt="Orchestrionix"
+              />
             </div>
             <nav className="flex flex-1 flex-col">
               <ul className="flex flex-1 flex-col gap-y-7">
@@ -433,14 +431,11 @@ const Layout = () => {
         {/* Sticky Header */}
         <div className="sticky top-0 z-40 flex items-center justify-between bg-black/95 backdrop-blur-sm px-4 py-3 border-b border-white/[0.05] lg:hidden h-14">
           <div className="flex items-center gap-3">
-            <a href="https://orchestx-terminal-production.up.railway.app">
             <img
               className="h-6 w-auto"
               src="/images/orchestrionix-logo-white.png"
               alt="Orchestrionix"
             />
-              </a>
-            
           </div>
           <button
             type="button"
