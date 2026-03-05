@@ -12,6 +12,7 @@ export interface SortableSongItemProps {
     onDelete: (index: number) => void;
     onPlay: (index: number) => void;
     isPlaying?: boolean;
+    isPreset?: boolean;
   }
   
   const SortableSongItem: React.FC<SortableSongItemProps> = ({ 
@@ -19,7 +20,8 @@ export interface SortableSongItemProps {
     index, 
     onDelete,
     onPlay,
-    isPlaying = false
+    isPlaying = false,
+    isPreset = false
   }) => {
     const {
       attributes,
@@ -44,7 +46,7 @@ export interface SortableSongItemProps {
         {...attributes}
         style={style}
         className={`
-          grid grid-cols-[32px_1fr_32px] sm:grid-cols-[40px_40px_1fr_120px_40px] lg:grid-cols-[50px_50px_1fr_160px_50px] 
+          grid ${isPreset ? 'grid-cols-[32px_1fr]' : 'grid-cols-[32px_1fr_32px]'} ${isPreset ? 'sm:grid-cols-[40px_40px_1fr_120px]' : 'sm:grid-cols-[40px_40px_1fr_120px_40px]'} ${isPreset ? 'lg:grid-cols-[50px_50px_1fr_160px]' : 'lg:grid-cols-[50px_50px_1fr_160px_50px]'} 
           items-center px-2 sm:px-4 py-2.5 sm:py-3 text-white hover:bg-white/5 transition-colors group cursor-grab active:cursor-grabbing
           ${isDragging ? "bg-white/5" : ""}
           ${isPlaying ? "bg-white/5" : ""}
@@ -89,17 +91,19 @@ export interface SortableSongItemProps {
         <div className="hidden sm:block text-center text-white/60 text-xs sm:text-sm truncate" {...listeners}>{songInfo.rhythm}</div>
         
         {/* Delete button */}
-        <div className="flex justify-center">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(index);
-            }}
-            className="sm:opacity-0 sm:group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity p-1"
-          >
-            <FiX className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
+        {!isPreset && (
+          <div className="flex justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(index);
+              }}
+              className="sm:opacity-0 sm:group-hover:opacity-100 text-white/60 hover:text-red-500 transition-opacity p-1"
+            >
+              <FiX className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
+        )}
       </div>
     );
   };

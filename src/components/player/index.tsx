@@ -104,31 +104,31 @@ export default function PlayerControle() {
             <div className="flex justify-around">
               <div className="flex space-x-6">
                 <button 
-                  className="focus:outline-none text-gray-300 hover:text-gold" 
+                  className="focus:outline-none text-gray-300 hover:text-gold bg-black" 
                   onClick={async () => await prevRemotePlayer()}
                 >
-                  <BackwardOutline className="h-10" />
+                  <BackwardOutline className="h-10 text-gold bg-black" />
                 </button>
                 {playerState?.status === STATUS_PLAYING ? (
                   <button 
-                    className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                    className="focus:outline-non text-center text-gray-300 hover:text-gold bg-black" 
                     onClick={async () => await toggelRemotePlayer()}
                   >
-                    <PauseOutline className="h-12" />
+                    <PauseOutline className="h-12 text-gold bg-black" />
                   </button>
                 ) : (
                   <button 
-                    className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                    className="focus:outline-non text-center text-gray-300 hover:text-gold bg-black" 
                     onClick={async () => await toggelRemotePlayer()}
                   >
-                    <PlayOutline className="h-12" />
+                    <PlayOutline className="h-12 text-gold bg-black" />
                   </button>
                 )}
                 <button 
-                  className="focus:outline-none text-gray-300 hover:text-gold" 
+                  className="focus:outline-none text-gray-300 hover:text-gold bg-black" 
                   onClick={async () => await nextRemotePlayer()}
                 >
-                  <ForwardOutline className="h-10" />
+                  <ForwardOutline className="h-10 text-gold bg-black" />
                 </button>
               </div>
             </div>
@@ -199,31 +199,31 @@ export default function PlayerControle() {
 
                 <div className="flex space-x-4 p-2 py-4 xl:p-0 xl:mt-4">
                   <button 
-                    className="focus:outline-none text-gray-300 hover:text-gold" 
+                    className="focus:outline-none text-gray-300 hover:text-gold bg-black" 
                     onClick={async () => await prevRemotePlayer()}
                   >
-                    <BackwardOutline className="h-8" />
+                    <BackwardOutline className="h-8 text-white bg-black" />
                   </button>
                   {playerState?.status === STATUS_PLAYING ? (
                     <button 
-                      className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                      className="focus:outline-non text-center text-gray-300 hover:text-gold bg-black" 
                       onClick={async () => await toggelRemotePlayer()}
                     >
-                      <PauseOutline className="h-10" />
+                      <PauseOutline className="h-10 text-white bg-black" />
                     </button>
                   ) : (
                     <button 
-                      className="focus:outline-non text-center text-gray-300 hover:text-gold" 
+                      className="focus:outline-non text-center text-gray-300 hover:text-gold bg-black" 
                       onClick={async () => await toggelRemotePlayer()}
                     >
-                      <PlayOutline className="h-10" />
+                      <PlayOutline className="h-10 text-white bg-black" />
                     </button>
                   )}
                   <button 
-                    className="focus:outline-none text-gray-300 hover:text-gold" 
+                    className="focus:outline-none text-gray-300 hover:text-gold bg-black" 
                     onClick={async () => await nextRemotePlayer()}
                   >
-                    <ForwardOutline className="h-8" />
+                    <ForwardOutline className="h-8 text-white bg-black" />
                   </button>
                 </div>
 

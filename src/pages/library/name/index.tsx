@@ -33,6 +33,7 @@ import SortableSongItem from "./components/SortableSongItem";
 import Breadcrumb from "../../../components/tailwind/breadcrumbs";
 import { Button } from "../../../components/tailwind/button";
 import { Modal } from "../../../components/tailwind/modal";
+import { isLite } from "../../../utils/constants";
 
 
 const PlaylistDetail: React.FC = () => {
@@ -220,7 +221,9 @@ const PlaylistDetail: React.FC = () => {
                 current: false
               },
               {
-                name: playlist?.displayName || playlist?.playlistName || "",
+                name: isPreset && presetIndex >= 0 
+                  ? `Preset ${presetIndex}`
+                  : playlist?.displayName || playlist?.playlistName || "",
                 href: `/library/${encodeURIComponent(playlist?.playlistName || "")}`,
                 current: true
               }
@@ -243,30 +246,43 @@ const PlaylistDetail: React.FC = () => {
           <div className="relative z-10">
             {/* Mobile: Compact horizontal layout */}
             <div className="sm:hidden flex items-center gap-3">
-              {/* Small album art */}
-              <div className="w-16 h-16 shadow-lg group relative flex-shrink-0">
-                <div
-                  className={`w-full h-full rounded-lg ${isPreset ? 'ring-2 ring-amber-500/50' : ''}`}
-                  style={{
-                    background: `linear-gradient(to bottom right, #000000, ${color2})`,
-                  }}
-                >
-                  <FiMusic className="w-full h-full p-3 text-white/50" />
-                </div>
-                {/* Play button overlay */}
+              {/* Small album art or play button */}
+              {isLite ? (
                 <button
                   onClick={handlePlayPlaylist}
-                  className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-active:opacity-100 transition-opacity rounded-lg"
+                  className={`w-12 h-12 rounded-full ${isPreset ? 'bg-gold' : 'bg-gold'} text-black flex items-center justify-center shadow-lg flex-shrink-0 transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 active:scale-95'}`}
                 >
-                  <div className={`p-1.5 rounded-full ${isPreset ? 'bg-amber-500' : 'bg-gold'} text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100'}`}>
-                    {isPlaylistPlaying ? (
-                      <FiPause className="w-3 h-3" />
-                    ) : (
-                      <FiPlay className="w-3 h-3" />
-                    )}
-                  </div>
+                  {isPlaylistPlaying ? (
+                    <FiPause className="w-5 h-5" />
+                  ) : (
+                    <FiPlay className="w-5 h-5" />
+                  )}
                 </button>
-              </div>
+              ) : (
+                <div className="w-16 h-16 shadow-lg group relative flex-shrink-0">
+                  <div
+                    className={`w-full h-full rounded-lg ${isPreset ? 'ring-2 ring-amber-500/50' : ''}`}
+                    style={{
+                      background: `linear-gradient(to bottom right, #000000, ${color2})`,
+                    }}
+                  >
+                    <FiMusic className="w-full h-full p-3 text-white/50" />
+                  </div>
+                  {/* Play button overlay */}
+                  <button
+                    onClick={handlePlayPlaylist}
+                    className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-active:opacity-100 transition-opacity rounded-lg"
+                  >
+                    <div className={`p-1.5 rounded-full ${isPreset ? 'bg-gold' : 'bg-gold'} text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100'}`}>
+                      {isPlaylistPlaying ? (
+                        <FiPause className="w-3 h-3" />
+                      ) : (
+                        <FiPlay className="w-3 h-3" />
+                      )}
+                    </div>
+                  </button>
+                </div>
+              )}
               
               {/* Playlist name and actions */}
               <div className="flex-1 min-w-0">
@@ -294,10 +310,12 @@ const PlaylistDetail: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <h1 className="text-base font-bold text-white truncate">
-                        {playlist.displayName || playlist.playlistName}
+                        {isPreset && presetIndex >= 0 
+                          ? `Preset ${presetIndex}`
+                          : playlist.displayName || playlist.playlistName}
                     </h1>
                       {isPreset && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-black rounded flex-shrink-0">
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-gold/90 text-black rounded flex-shrink-0">
                           Preset
                         </span>
                       )}
@@ -328,37 +346,50 @@ const PlaylistDetail: React.FC = () => {
 
             {/* Desktop: Original layout */}
             <div className="hidden sm:flex flex-col sm:flex-row gap-4 sm:gap-6">
-              {/* Album art */}
-              <div className="w-36 sm:w-36 lg:w-48 lg:h-48 shadow-2xl group relative flex-shrink-0 mx-auto sm:mx-0">
-                <div
-                  className={`w-full h-full rounded-lg ${isPreset ? 'ring-2 ring-amber-500/50' : ''}`}
-                  style={{
-                    background: `linear-gradient(to bottom right, #000000, ${color2})`,
-                  }}
-                >
-                  <FiMusic className="w-full h-full p-8 lg:p-12 text-white/50" />
-                </div>
-                {/* Play button overlay */}
+              {/* Album art or play button */}
+              {isLite ? (
                 <button
                   onClick={handlePlayPlaylist}
-                  className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                  className={`w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gold text-black flex items-center justify-center shadow-2xl flex-shrink-0 mx-auto sm:mx-0 transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}
                 >
-                  <div className={`p-3 lg:p-4 rounded-full ${isPreset ? 'bg-amber-500' : 'bg-gold'} text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
-                    {isPlaylistPlaying ? (
-                      <FiPause className="w-6 h-6 lg:w-8 lg:h-8" />
-                    ) : (
-                      <FiPlay className="w-6 h-6 lg:w-8 lg:h-8" />
-                    )}
-                  </div>
+                  {isPlaylistPlaying ? (
+                    <FiPause className="w-8 h-8 lg:w-10 lg:h-10" />
+                  ) : (
+                    <FiPlay className="w-8 h-8 lg:w-10 lg:h-10" />
+                  )}
                 </button>
-              </div>
+              ) : (
+                <div className="w-36 sm:w-36 lg:w-48 lg:h-48 shadow-2xl group relative flex-shrink-0 mx-auto sm:mx-0">
+                  <div
+                    className={`w-full h-full rounded-lg ${isPreset ? 'ring-2 ring-gold/50' : ''}`}
+                    style={{
+                      background: `linear-gradient(to bottom right, #000000, ${color2})`,
+                    }}
+                  >
+                    <FiMusic className="w-full h-full p-8 lg:p-12 text-white/50" />
+                  </div>
+                  {/* Play button overlay */}
+                  <button
+                    onClick={handlePlayPlaylist}
+                    className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                  >
+                    <div className={`p-3 lg:p-4 rounded-full ${isPreset ? 'bg-gold' : 'bg-gold'} text-black transform transition-transform ${isPlaylistPlaying ? 'scale-95' : 'scale-100 hover:scale-105'}`}>
+                      {isPlaylistPlaying ? (
+                        <FiPause className="w-6 h-6 lg:w-8 lg:h-8" />
+                      ) : (
+                        <FiPlay className="w-6 h-6 lg:w-8 lg:h-8" />
+                      )}
+                    </div>
+                  </button>
+                </div>
+              )}
               
               {/* Playlist info */}
               <div className="flex flex-col justify-end flex-1 text-center sm:text-left min-w-0">
                 <div className="text-white/60 font-medium text-xs sm:text-sm flex items-center gap-2 justify-center sm:justify-start">
                   {isPreset ? 'Preset Playlist' : 'Playlist'}
                   {isPreset && (
-                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-black rounded">
+                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-gold/90 text-black rounded">
                       Preset
                     </span>
                   )}
@@ -386,7 +417,9 @@ const PlaylistDetail: React.FC = () => {
                 ) : (
                   <div className="flex items-center gap-2 sm:gap-4 mt-2 mb-2 sm:mb-4 justify-center sm:justify-start flex-wrap">
                     <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white truncate max-w-full">
-                      {playlist.displayName || playlist.playlistName}
+                      {isPreset && presetIndex >= 0 
+                        ? `Preset ${presetIndex}`
+                        : playlist.displayName || playlist.playlistName}
                     </h1>
                     {!isPreset && (
                     <div className="flex items-center gap-2">
@@ -417,12 +450,12 @@ const PlaylistDetail: React.FC = () => {
         {/* Tracks Section */}
         <div className="px-3 sm:px-6">
           {/* Table Header - simplified on mobile */}
-          <div className="hidden sm:grid grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px_50px] items-center text-white/60 text-xs sm:text-sm px-2 sm:px-4 py-2 border-b border-white/10">
+          <div className={`hidden sm:grid ${isPreset ? 'grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px]' : 'grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px_50px]'} items-center text-white/60 text-xs sm:text-sm px-2 sm:px-4 py-2 border-b border-white/10`}>
             <div className="text-center">#</div>
             <div></div>
             <div>Title</div>
             <div className="text-center">Rhythm</div>
-            <div className="hidden lg:block"></div>
+            {!isPreset && <div className="hidden lg:block"></div>}
           </div>
 
           <DndContext
@@ -442,6 +475,7 @@ const PlaylistDetail: React.FC = () => {
                     onDelete={handleDeleteSong}
                     onPlay={handlePlaySong}
                     isPlaying={currentPlayingIndex === index}
+                    isPreset={isPreset}
                   />
                 ))}
               </div>

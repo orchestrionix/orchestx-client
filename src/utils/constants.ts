@@ -10,3 +10,4 @@ export const DEFAULT_ERROR_MESSAGE = "Something went wrong"
 
 export const RHYTHMS = ['Bayon', 'Bolero', 'Boogie', 'Fox', 'Mars', 'Mazurka', 'Polka', 'Rumba', 'Step', 'Tango', 'Wals'];
 
+export const isLite = true;

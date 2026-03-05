@@ -18,8 +18,8 @@ const PresetItem: React.FC<IPlaylist> = ({ index, playlistName, songs }) => {
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%"><defs><linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${color1}" /><stop offset="100%" stop-color="${color1}" /></linearGradient></defs><rect width="100%" height="100%" fill="url(#gradient1)"/></svg>`
   )}`;
 
-  // Title is always just the number (1-based)
-  const title = (index + 1).toString();
+  // Title is always just the number (0-based for presets)
+  const title = index.toString();
   
   // Border color (gold, same as regular playlists)
   const borderColor = "border-gold";

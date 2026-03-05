@@ -42,7 +42,8 @@ export interface IPlaylist {
     isPreset: boolean;
 } 
 
-export interface IActivePlaylistItem { index: number; rhythm: string; name: string; extension: string; }
+/** index = display position (0-based); playlistIndex = actual playlist index sent to PlayItem */
+export interface IActivePlaylistItem { index: number; playlistIndex: number; rhythm: string; name: string; extension: string; }
 
 export interface PlayerContextType {
   play: (path: string) => void;

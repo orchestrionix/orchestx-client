@@ -214,17 +214,48 @@ export function parseSongString(s?: string): {
   }
 }
 
+/**
+ * Builds the active playlist in display order using the `order` array from the server.
+ * order[displayPosition] = actual playlist index (0-based). Server may send order as string[].
+ * Display order: first row = playlist[order[0]], second = playlist[order[1]], etc.
+ * Each item gets playlistIndex = actual index to send to PlayItem API.
+ */
+export function buildOrderedPlaylistItems(
+  playlist: string[],
+  order: number[] | string[]
+): IActivePlaylistItem[] {
+  if (!playlist?.length) return [];
+  const n = playlist.length;
+
+  if (!Array.isArray(order) || order.length !== n) {
+    const items = parsePlaylistString(playlist);
+    return items.map((item, d) => ({ ...item, playlistIndex: d }));
+  }
+
+  const indices: number[] = [];
+  for (let d = 0; d < n; d++) {
+    const idx = Number(order[d]);
+    if (Number.isNaN(idx) || idx < 0 || idx >= n) {
+      const items = parsePlaylistString(playlist);
+      return items.map((item, i) => ({ ...item, playlistIndex: i }));
+    }
+    indices.push(idx);
+  }
+
+  const orderedPaths = indices.map((i) => playlist[i]);
+  const items = parsePlaylistString(orderedPaths);
+  return items.map((item, d) => ({ ...item, playlistIndex: indices[d] }));
+}
+
 export function parsePlaylistString(songPaths: string[]): IActivePlaylistItem[] {
   return songPaths.map((path, index) => {
     try {
-      // Extract filename from path
       const filename = path.split(/[/\\]/).pop() || "";
-
-      // Split extension
       const lastDotIndex = filename.lastIndexOf(".");
       if (lastDotIndex === -1) {
         return {
           index,
+          playlistIndex: index,
           rhythm: "",
           name: filename,
           extension: ""
@@ -234,21 +265,20 @@ export function parsePlaylistString(songPaths: string[]): IActivePlaylistItem[] 
       const extension = filename.substring(lastDotIndex + 1).trim();
       const fullName = filename.substring(0, lastDotIndex).trim();
 
-      // If doesn't start with DMP, return the whole string as name
       if (!fullName.startsWith("DMP_")) {
         return {
           index,
+          playlistIndex: index,
           rhythm: "",
           name: fullName,
           extension
         };
       }
 
-      // Split the DMP parts
       const parts = fullName.split("_");
-      
       return {
         index,
+        playlistIndex: index,
         rhythm: (parts[1] || "").replace(/-/g, " "),
         name: (parts[2] || "").replace(/-/g, " "),
         extension,
@@ -258,6 +288,7 @@ export function parsePlaylistString(songPaths: string[]): IActivePlaylistItem[] 
       console.error("Error parsing playlist item:", error);
       return {
         index,
+        playlistIndex: index,
         rhythm: "",
         name: path,
         extension: ""

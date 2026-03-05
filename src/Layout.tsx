@@ -27,6 +27,8 @@ import {
 import { classNames } from './utils';
 import PlayerControle from './components/player';
 import { PlayerContext } from './playerProvider';
+import { isLite } from './utils/constants';
+import { getPresenceEnabled, CENTRAL_HUB_URL } from './actions';
 
 // Define types for navigation items
 interface NavigationItem {
@@ -40,13 +42,13 @@ interface TeamItem extends NavigationItem {
   id: number;
 }
 
-const navigation: NavigationItem[] = [
+const allNavigation: NavigationItem[] = [
   { name: "Home", href: "/", icon: HomeModernOutline, iconSolid: HomeModernSolid },
   { name: "Search", href: "search", icon: MagnifyingGlassOutline, iconSolid: MagnifyingGlassSolid },
   { name: "Library", href: "library", icon: ListBulletOutline, iconSolid: ListBulletSolid },
 ];
 
-const teams: TeamItem[] = [
+const allTeams: TeamItem[] = [
   {
     id: 1,
     name: "Settings",
@@ -70,15 +72,38 @@ const teams: TeamItem[] = [
   },
 ];
 
+// Filter navigation based on isLite
+const navigation: NavigationItem[] = isLite
+  ? [
+      ...allNavigation.filter(item => item.name !== "Search"),
+      ...allTeams.filter(item => item.name === "Volume").map(item => ({
+        name: item.name,
+        href: item.href,
+        icon: item.icon,
+        iconSolid: item.iconSolid,
+      }))
+    ]
+  : allNavigation;
+
+// Filter teams based on isLite - exclude Settings, Views, and Volume
+const teams: TeamItem[] = isLite
+  ? []
+  : allTeams;
+
 const Layout = () => {
   const context = useContext(PlayerContext);
   const playerState = context?.playerState;
   const connectionError = context?.connectionError;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [presenceEnabled, setPresenceEnabled] = useState(false);
   const location = useLocation();
 
   const [showOverlay, setShowOverlay] = useState(false);
+
+  useEffect(() => {
+    getPresenceEnabled().then(setPresenceEnabled);
+  }, []);
 
   // Show overlay when connection is lost or player has error
   useEffect(() => {
@@ -222,8 +247,8 @@ const Layout = () => {
                       <div className="flex items-center gap-3">
                         {/* <img
                           className="h-7 w-auto"
-                          src="/images/orchestrionix-logo-white.png"
-                          alt="Orchestrionix"
+                          src="/images/decap-logo-white.png"
+                          alt="decap"
                         /> */}
                         
                         <span className="text-white/60 text-sm font-medium">Menu</span>
@@ -282,18 +307,23 @@ const Layout = () => {
                         })}
                       </div>
 
-                      {/* Divider */}
-                      <div className="my-5 mx-2 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                      {/* Divider - only show if there are teams */}
+                      {!isLite && teams.length > 0 && (
+                        <div className="my-5 mx-2 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                      )}
 
-                      {/* Configuration Section */}
-                      <div className="mb-3 px-2">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-white/40">
-                          Configuration
-                        </span>
-                      </div>
+                      {/* Configuration Section - only show if not lite and there are teams */}
+                      {!isLite && teams.length > 0 && (
+                        <div className="mb-3 px-2">
+                          <span className="text-xs font-semibold uppercase tracking-wider text-white/40">
+                            Configuration
+                          </span>
+                        </div>
+                      )}
                       
-                      <div className="space-y-1">
-                        {teams.map((team, idx) => {
+                      {teams.length > 0 && (
+                        <div className="space-y-1">
+                          {teams.map((team, idx) => {
                           const active = isActive(team.href);
                           const IconComponent = active ? team.iconSolid : team.icon;
                           return (
@@ -331,8 +361,9 @@ const Layout = () => {
                               )}
                             </Link>
                           );
-                        })}
-                      </div>
+                          })}
+                        </div>
+                      )}
                       
                       {/* Safe area for home indicator */}
                       <div className="h-4" />
@@ -348,11 +379,25 @@ const Layout = () => {
           {/* Sidebar component, swap this element with another sidebar if you like border-gold vertical devider*/}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto  bg-black px-6">
             <div className="flex h-16 shrink-0 items-center">
-              <img
-                className="h-8 w-auto"
-                src="/images/orchestrionix-logo-white.png"
-                alt="Orchestrionix"
-              />
+              {presenceEnabled ? (
+                <a
+                  href={CENTRAL_HUB_URL}
+                  className="focus:outline-none focus:ring-2 focus:ring-gold/50 rounded"
+                  aria-label="Open central hub"
+                >
+                  <img
+                    className="h-8 w-auto hover:opacity-90 transition-opacity cursor-pointer"
+                    src="/images/decap-logo-white.png"
+                    alt="decap"
+                  />
+                </a>
+              ) : (
+                <img
+                  className="h-8 w-auto"
+                  src="/images/decap-logo-white.png"
+                  alt="decap"
+                />
+              )}
             </div>
             <nav className="flex flex-1 flex-col">
               <ul className="flex flex-1 flex-col gap-y-7">
@@ -388,12 +433,13 @@ const Layout = () => {
                     })}
                   </ul>
                 </li>
-                <li>
-                  <div className="text-xs font-semibold leading-6 text-white">
-                    Configuration
-                  </div>
-                  <ul className="-mx-2 mt-2 space-y-3">
-                    {teams.map((team) => {
+                {!isLite && teams.length > 0 && (
+                  <li>
+                    <div className="text-xs font-semibold leading-6 text-white">
+                      Configuration
+                    </div>
+                    <ul className="-mx-2 mt-2 space-y-3">
+                      {teams.map((team) => {
                       const active = isActive(team.href);
                       const IconComponent = active ? team.iconSolid : team.icon;
                       return (
@@ -420,9 +466,10 @@ const Layout = () => {
                           </Link >
                         </li>
                       );
-                    })}
-                  </ul>
-                </li>
+                      })}
+                    </ul>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>
@@ -431,11 +478,25 @@ const Layout = () => {
         {/* Sticky Header */}
         <div className="sticky top-0 z-40 flex items-center justify-between bg-black/95 backdrop-blur-sm px-4 py-3 border-b border-white/[0.05] lg:hidden h-14">
           <div className="flex items-center gap-3">
-            <img
-              className="h-6 w-auto"
-              src="/images/orchestrionix-logo-white.png"
-              alt="Orchestrionix"
-            />
+            {presenceEnabled ? (
+              <a
+                href={CENTRAL_HUB_URL}
+                className="focus:outline-none focus:ring-2 focus:ring-gold/50 rounded"
+                aria-label="Open central hub"
+              >
+                <img
+                  className="h-6 w-auto hover:opacity-90 transition-opacity cursor-pointer"
+                  src="/images/decap-logo-white.png"
+                  alt="decap"
+                />
+              </a>
+            ) : (
+              <img
+                className="h-6 w-auto"
+                src="/images/decap-logo-white.png"
+                alt="decap"
+              />
+            )}
           </div>
           <button
             type="button"
@@ -447,7 +508,7 @@ const Layout = () => {
           </button>
         </div>
         {/* Main Content */}
-        <main className="lg:ml-72 p-1 pt-4 sm:p-5 bg-grey-900 lg:h-screen h-[calc(100vh-3.5rem)] overflow-hidden grid grid-rows-[1fr_auto]">
+        <main className="lg:ml-72 p-1 pt-4 sm:p-5 bg-grey-900 h-[calc(100vh-6rem)] md:h-[calc(100vh-3.5rem)] overflow-hidden grid grid-rows-[1fr_auto]">
           {/* Children Container: Occupies remaining space and scrolls if content overflows */}
           <div className="sm:bg-black rounded-3xl sm:px-8 xs:pb-4 xs:pt-1 sm:pt-4 overflow-auto">
             {<Outlet />}

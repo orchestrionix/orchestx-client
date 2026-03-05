@@ -12,6 +12,7 @@ import { ModalV2 } from "../../components/tailwind/modalV2";
 import { Modal } from "../../components/tailwind/modal";
 import Breadcrumb from "../../components/tailwind/breadcrumbs";
 import Button from "../../components/tailwind/button";
+import { isLite } from "../../utils/constants";
 
 
 const Library: React.FC = () => {
@@ -82,21 +83,23 @@ const Library: React.FC = () => {
               ]} 
             />
           </div>
-          <div className="flex-shrink-0">
-            <Button 
-              primary
-              onClick={(e) => {
-                e.preventDefault();
-                setOpenPlaylistDetail(true);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              <span className="hidden sm:inline">Create Playlist</span>
-              <span className="sm:hidden">New</span>
-            </Button> 
-          </div>
+          {!isLite && (
+            <div className="flex-shrink-0">
+              <Button 
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpenPlaylistDetail(true);
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                <span className="hidden sm:inline">Create Playlist</span>
+                <span className="sm:hidden">New</span>
+              </Button> 
+            </div>
+          )}
         </div>
       </header>
 
@@ -122,7 +125,10 @@ const Library: React.FC = () => {
                       <span className="w-2 h-2 rounded-full bg-gold"></span>
                       Presets
                     </h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-10 gap-2 sm:gap-4">
+                    <div className={isLite 
+                      ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4"
+                      : "grid grid-cols-2 sm:grid-cols-10 gap-2 sm:gap-4"
+                    }>
                       {playlists.filter(p => p.isPreset).map((list, index) => (
                         <div
                           key={`preset-${index}`}
@@ -146,7 +152,7 @@ const Library: React.FC = () => {
                 )}
 
                 {/* Regular Playlists Section */}
-                {playlists.some(p => !p.isPreset) && (
+                {!isLite && playlists.some(p => !p.isPreset) && (
                   <div>
                     <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3 flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-gold"></span>

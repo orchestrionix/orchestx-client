@@ -4,7 +4,7 @@ import { FiMusic, FiPlay, FiPause, FiX } from "react-icons/fi";
 import { PlayerContext } from "../../playerProvider";
 import { IActivePlaylistItem } from "../../types";
 import { getRemotePlayerActivePlaylist, playItemRemotePlayer, selectItemRemotePlayer } from "../../actions";
-import { extractFileNameWithoutExtension, parsePlaylistString } from "../../utils";
+import { extractFileNameWithoutExtension, buildOrderedPlaylistItems } from "../../utils";
 import Breadcrumb from "../../components/tailwind/breadcrumbs";
 import { toastError } from "../../utils/toasts";
 
@@ -20,31 +20,31 @@ const Home: React.FC = () => {
     async function fetchData() {
       try {
         const playlistData = await getRemotePlayerActivePlaylist();
-  
-        const playlist = parsePlaylistString(playlistData.playlist);
-        const file = playlistData.file;
-  
-        if (playlistData.playlist) {
-          setPlaylist(playlist);
-          setPlaylistName(extractFileNameWithoutExtension(file));
+        if (!playlistData.playlist?.length) {
+          setPlaylist([]);
+          setListLoading(false);
+          return;
         }
+        const playlist = buildOrderedPlaylistItems(playlistData.playlist, playlistData.order);
+        const file = playlistData.file;
+        setPlaylist(playlist);
+        setPlaylistName(extractFileNameWithoutExtension(file));
       } catch (error: any) {
         toastError(error?.message ? error?.message : "Failed to fetch playlist data");
       } finally {
         setListLoading(false);
       }
     }
-  
+
     fetchData();
   }, [playerState?.itemId]);  
 
-  const handlePlay = (index: number) => {
-    console.log(index);
-    playItemRemotePlayer(index);
+  const handlePlay = (playlistIndex: number) => {
+    playItemRemotePlayer(playlistIndex);
   };
 
-  const handleSelect = (index: number) => {
-    selectItemRemotePlayer(index);
+  const handleSelect = (playlistIndex: number) => {
+    selectItemRemotePlayer(playlistIndex);
   };
 
   // Generate gradient colors for the header
@@ -117,30 +117,30 @@ const Home: React.FC = () => {
                   {/* Table Body */}
                   <div className="divide-y divide-white/10">
                     {playlist.map((item, index) => {
-                      const isCurrentItem = Number(playerState?.itemId) === item.index;
+                      const isCurrentItem = Number(playerState?.itemId) === index;
                       const name = item.name.replace(/[0-9]/g, "").replace(/[^\w\s]/g, "");
                       
                       return (
                         <div
-                          key={item.index}
+                          key={`${item.playlistIndex}-${index}`}
                           className={`
                             grid grid-cols-[32px_1fr_auto] sm:grid-cols-[40px_40px_1fr_120px] lg:grid-cols-[50px_50px_1fr_160px_50px] 
-                            items-center px-2 sm:px-4 py-2.5 sm:py-3 text-white hover:bg-white/5 transition-colors group cursor-pointer
+                            items-center px-2 sm:px-4 py-4 sm:py-3 text-white hover:bg-white/5 transition-colors group cursor-pointer
                             ${isCurrentItem ? 'bg-white/5' : ''}
                           `}
-                          onClick={() => handleSelect(item.index)}
-                          onDoubleClick={() => handlePlay(item.index)}
+                          onClick={() => handleSelect(index)}
+                          onDoubleClick={() => handlePlay(index)}
                         >
                           {/* Mobile: Index with play button */}
                           <div className="sm:hidden flex items-center justify-center">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handlePlay(item.index);
+                                handlePlay(index);
                               }}
-                              className={`${isCurrentItem ? 'text-gold' : 'text-white/60'} hover:text-gold`}
+                              className={`${isCurrentItem ? 'text-gold' : 'text-white/60'} hover:text-gold bg-grey-900 md:bg-black`}
                             >
-                              <FiPlay className="w-4 h-4" />
+                              <FiPlay className="w-6 h-6 text-gold bg-grey-900 hover:bg-grey-900/50 md:bg-black" />
                             </button>
                           </div>
                           
@@ -152,11 +152,11 @@ const Home: React.FC = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handlePlay(item.index);
+                                handlePlay(index);
                               }}
-                              className={`${isCurrentItem ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all`}
+                              className={`${isCurrentItem ? 'text-gold' : 'text-white/60 opacity-0 group-hover:opacity-100'} hover:text-gold transition-all bg-black`}
                             >
-                              <FiPlay className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <FiPlay className="w-4 h-4 sm:w-5 sm:h-5 text-gold bg-black" />
                             </button>
                           </div>
                           

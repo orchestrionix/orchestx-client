@@ -10,6 +10,21 @@ export interface Settings {
 
 export const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:4000`;
 
+const CENTRAL_HUB_URL = 'https://orchestx-terminal-production.up.railway.app';
+
+export async function getPresenceEnabled(): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/presence-enabled`);
+    if (!response.ok) return false;
+    const data = await response.json();
+    return !!data.enabled;
+  } catch {
+    return false;
+  }
+}
+
+export { CENTRAL_HUB_URL };
+
 export async function getRemotePlayerState() {
   const response = await fetch(
     `${API_BASE_URL}/api/get-remote-player-state`
@@ -23,7 +38,7 @@ export async function getRemotePlayerState() {
 
 export async function getRemotePlayerActivePlaylist(): Promise<{
   playlist: string[];
-  order: string[];
+  order: number[];
   file: string;
 }> {
   const response = await fetch(`${API_BASE_URL}/api/get-remote-player-active-playlist`);
@@ -33,11 +48,26 @@ export async function getRemotePlayerActivePlaylist(): Promise<{
   }
 
   const data = await response.json();
-  
+  const playlist = data.playlist ?? [];
+  const rawOrder = data.order ?? data.Order ?? data.shuffleOrder;
+  let order: number[];
+
+  if (Array.isArray(rawOrder) && rawOrder.length === playlist.length) {
+    order = rawOrder.map((i: number | string) => Number(i));
+    const min = Math.min(...order);
+    const max = Math.max(...order);
+    const n = order.length;
+    if (min === 1 && max === n) {
+      order = order.map((i) => i - 1);
+    }
+  } else {
+    order = playlist.map((_: unknown, i: number) => i);
+  }
+
   return {
-    playlist: data.playlist,
-    order: data.order,
-    file: data.file,
+    playlist,
+    order,
+    file: data.file ?? "",
   };
 }
 
@@ -307,7 +337,6 @@ export async function renameRemotePlaylist(oldPlaylistName: string, newPlaylistN
 
 export async function loadPlaylistRemotePlayer(playlistPath: string, playIndex: number) {
   try {
-    console.log("Loading playlist on remote player:", playlistPath, playIndex);
 
     const response = await fetch(`${API_BASE_URL}/api/load-playlist-remote-player`, {
       method: "POST",
