@@ -118,12 +118,11 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
       ws.onerror = (error) => {
         console.error('[WS] Error:', error);
       };
-      ws.onclose = (event) => {
+      ws.onclose = () => {
         if (!isMountedRef.current) return;
         setIsConnected(false);
         wsRef.current = null;
-        
-        // Schedule reconnection
+        setConnectionError(true);
         scheduleReconnect();
       };
 
@@ -134,14 +133,12 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     }
   }, [cleanupWebSocket, scheduleReconnect]);
 
-  // Stale connection detection
-  // If we haven't received a message in 5 seconds while supposedly connected,
-  // the connection is likely dead
+  // Stale connection detection: reconnect in background without showing the modal
+  // Modal only shows on real disconnect (onclose) or initial connect failure
+  const WS_STALE_TIMEOUT_MS = 15000;
   useEffect(() => {
     const checkStaleConnection = setInterval(() => {
-      if (isConnected && Date.now() - lastMessageTimeRef.current > 5000) {
-        console.log('[WS] Connection appears stale, reconnecting...');
-        setConnectionError(true);
+      if (isConnected && Date.now() - lastMessageTimeRef.current > WS_STALE_TIMEOUT_MS) {
         cleanupWebSocket();
         scheduleReconnect();
       }
