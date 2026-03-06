@@ -25,7 +25,7 @@ export default function PlayerControle() {
   const [openSongModal, setOpenSongModal] = useState(false);
 
   // Use the smooth progress hook for 60fps animation
-  const { smoothPosition, isPlaying } = usePlayerProgress({ playerState });
+  const { smoothPosition, isPlaying } = usePlayerProgress({ playerState, serverTime: context?.serverTime });
 
   const currentSong = parseSongString(playerState?.title ? playerState?.title : '');
   const isActive = playerState?.status === 'paused' || playerState?.status === 'playing';

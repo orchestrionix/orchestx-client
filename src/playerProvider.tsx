@@ -3,6 +3,8 @@ import { PlayerStateType } from './types';
 
 interface PlayerContextType {
   playerState: PlayerStateType | null;
+  /** Server timestamp (ms) when current playerState was captured; used for interpolation. Undefined if not provided. */
+  serverTime: number | undefined;
   isConnected: boolean;
   connectionError: boolean;
 }
@@ -20,6 +22,7 @@ const WS_RECONNECT_MULTIPLIER = 1.5;     // Exponential backoff multiplier
 
 export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   const [playerState, setPlayerState] = useState<PlayerStateType | null>(null);
+  const [serverTime, setServerTime] = useState<number | undefined>(undefined);
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(false);
   
@@ -105,6 +108,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
           const data = JSON.parse(event.data);
           if (data?.state) {
             setPlayerState(data.state);
+            setServerTime(typeof data.serverTime === 'number' ? data.serverTime : undefined);
           }
         } catch (error) {
           console.error('[WS] Failed to parse message:', error);
@@ -113,13 +117,9 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
 
       ws.onerror = (error) => {
         console.error('[WS] Error:', error);
-        // Don't set error state here, wait for onclose
       };
-
       ws.onclose = (event) => {
         if (!isMountedRef.current) return;
-        
-        console.log(`[WS] Disconnected (code: ${event.code})`);
         setIsConnected(false);
         wsRef.current = null;
         
@@ -185,7 +185,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   }, [isConnected, connectWebSocket]);
 
   return (
-    <PlayerContext.Provider value={{ playerState, isConnected, connectionError }}>
+    <PlayerContext.Provider value={{ playerState, serverTime, isConnected, connectionError }}>
       {children}
     </PlayerContext.Provider>
   );
